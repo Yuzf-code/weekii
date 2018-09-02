@@ -1,0 +1,12 @@
+{
+    "autoload": {
+        "psr-4": {
+            "App\\": "App/",
+            "Weekii\\": "Weekii/"
+        }
+    },
+
+    "require": {
+        "illuminate/database": "^5.5"
+    }
+}
