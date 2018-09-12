@@ -46,10 +46,7 @@ class ServerManager
 
         $eventList = $register->all();
 
-        var_dump($eventList);
-
         foreach ($eventList as $event => $handles) {
-            var_dump($event);
             $this->server->on($event, function () use ($handles) {
                 $args = func_get_args();
 
