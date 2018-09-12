@@ -1,6 +1,7 @@
 <?php
 namespace Weekii\Core;
 
+use Weekii\Core\Swoole\ServerManager;
 use Weekii\GlobalEvent;
 use Weekii\Lib\Config;
 
@@ -11,9 +12,9 @@ class Weekii
         define('WEEKII_ROOT', realpath(getcwd()));
         define('PROJECT_ROOT', WEEKII_ROOT . '/../..');
         define('CONFIG_PATH', PROJECT_ROOT . '/Config/');
-        require_once PROJECT_ROOT . '/vendor/autoload.php';
 
         self::init();
+        ServerManager::getInstance()->start();
     }
 
     public static function init()

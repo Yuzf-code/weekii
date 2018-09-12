@@ -18,7 +18,7 @@ class EventHelper
         // TODO 默认路由调度
         $dispatcher = new Dispatcher($controllerNameSpace);
         $register->set($register::onRequest, function (\swoole_http_request $rawRequest, \swoole_http_response $rawResponse) use ($dispatcher) {
-
+            var_dump($rawRequest->get);
         });
     }
 }

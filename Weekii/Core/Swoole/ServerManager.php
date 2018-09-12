@@ -19,6 +19,7 @@ class ServerManager
     public function start()
     {
         $this->createServer();
+        $this->server->start();
     }
 
     private function createServer()
@@ -42,6 +43,23 @@ class ServerManager
         $this->server->set($conf['setting']);
         $register = new EventRegister();
         $this->beforeServerStart($register);
+
+        $eventList = $register->all();
+
+        var_dump($eventList);
+
+        foreach ($eventList as $event => $handles) {
+            var_dump($event);
+            $this->server->on($event, function () use ($handles) {
+                $args = func_get_args();
+
+                foreach ($handles as $callback) {
+                    call_user_func_array($callback, $args);
+                }
+            });
+        }
+
+        return $this->server;
     }
 
     private function beforeServerStart(EventRegister $register)

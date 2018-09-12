@@ -42,12 +42,20 @@ class EventRegister
 
     public function set($key, \Closure $callback)
     {
-        $this->events[$key] = $callback;
+        if (!in_array($key, $this->allowEvent)) {
+            return false;
+        }
+        $this->events[$key] = [$callback];
+        return true;
     }
 
     public function add($key, \Closure $callback)
     {
+        if (!in_array($key, $this->allowEvent)) {
+            return false;
+        }
         $this->events[$key][] = $callback;
+        return true;
     }
 
     public function get($key)

@@ -11,8 +11,8 @@ return array(
         'mode' => SWOOLE_PROCESS,
         'sockType' => SWOOLE_TCP,
         'setting' => [
-            'task_worker_num' => 8, //异步任务进程
-            'task_max_request' => 10,
+            //'task_worker_num' => 8, //异步任务进程
+            //'task_max_request' => 10,
             'max_request' => 5000,  // worker最大处理请求数
             'worker_num' => 8
         ]
