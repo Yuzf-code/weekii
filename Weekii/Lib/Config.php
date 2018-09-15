@@ -14,8 +14,8 @@ class Config
         if (isset($this->conf[$key])) {
             return $this->conf[$key];
         } else {
-            if (file_exists(CONFIG_PATH  . $key . '.conf.php')) {
-                $this->conf[$key] = require CONFIG_PATH  . $key . '.conf.php';
+            if (file_exists(CONFIG_PATH . '/'  . $key . '.conf.php')) {
+                $this->conf[$key] = require CONFIG_PATH . '/'  . $key . '.conf.php';
                 return $this->conf[$key];
             } else {
                 return null;
@@ -30,8 +30,8 @@ class Config
             if (isset($this->conf[$key])) {
                 $confMap[$key] = $this->conf[$key];
             } else {
-                if (file_exists(CONFIG_PATH  . $key . '.conf.php')) {
-                    $this->conf[$key] = require CONFIG_PATH  . $key . '.conf.php';
+                if (file_exists(CONFIG_PATH . '/'  . $key . '.conf.php')) {
+                    $this->conf[$key] = require CONFIG_PATH . '/'  . $key . '.conf.php';
                     $confMap[$key] = $this->conf[$key];
                 } else {
                     $confMap[$key] = null;

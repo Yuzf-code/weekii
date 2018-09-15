@@ -11,7 +11,7 @@ class Weekii
     {
         define('WEEKII_ROOT', realpath(getcwd()));
         define('PROJECT_ROOT', WEEKII_ROOT . '/../..');
-        define('CONFIG_PATH', PROJECT_ROOT . '/Config/');
+        define('CONFIG_PATH', PROJECT_ROOT . '/Config');
 
         self::init();
         ServerManager::getInstance()->start();
@@ -22,8 +22,8 @@ class Weekii
         ini_set("display_errors","0");
         error_reporting(0);
 
-        if (file_exists(PROJECT_ROOT . 'GlobalEvent.php')) {
-            require_once PROJECT_ROOT . 'GlobalEvent.php';
+        if (file_exists(PROJECT_ROOT . '/GlobalEvent.php')) {
+            require_once PROJECT_ROOT . '/GlobalEvent.php';
         }
         GlobalEvent::frameInit();
         self::errorHandle();

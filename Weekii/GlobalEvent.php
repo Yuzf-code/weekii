@@ -1,6 +1,9 @@
 <?php
 namespace Weekii;
 
+use Weekii\Core\Http\Request;
+use Weekii\Core\Http\Response;
+use Weekii\Core\Swoole\EventRegister;
 use Weekii\Core\Swoole\ServerManager;
 use Weekii\Lib\Config;
 
