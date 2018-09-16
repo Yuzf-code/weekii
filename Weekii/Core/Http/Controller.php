@@ -30,5 +30,6 @@ abstract class Controller
     protected function actionNotFound($actionName)
     {
         $this->response()->withStatus(404);
+        $this->write("<h1>Action: {$actionName} not found</h1>");
     }
 }
