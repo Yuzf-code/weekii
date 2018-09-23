@@ -17,6 +17,12 @@ abstract class Controller
         $this->response->write($string);
     }
 
+    public function writeJson(array $params, int $code)
+    {
+        $this->response()->withStatus($code);
+        $this->response()->write(json_encode($params));
+    }
+
     public function request()
     {
         return $this->request;
@@ -25,6 +31,16 @@ abstract class Controller
     public function response()
     {
         return $this->response;
+    }
+
+    public function redirect($url, int $code)
+    {
+        $this->response->redirect($url, $code);
+    }
+
+    public function getActionName()
+    {
+        return $this->request->getActionName();
     }
 
     protected function actionNotFound($actionName)
