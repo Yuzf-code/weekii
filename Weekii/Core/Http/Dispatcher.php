@@ -25,11 +25,10 @@ class Dispatcher
                 $list = explode('/', $routeInfo['target']);
                 $controllerNamespace = $this->nameSpacePrefix;
                 for ($i = 0; $i < count($list) - 1; $i++) {
-                    $controllerNamespace = $controllerNamespace . '\\' . ucfirst($list[$i]);
+                    $controllerNamespace = $controllerNamespace . "\\" . ucfirst($list[$i]);
                 }
                 $request->setControllerNamespace($controllerNamespace . 'Controller');
                 $request->setActionName($list[$i]);
-                var_dump('not found');
                 break;
             case RouteRule::FOUND:
                 $params = $request->get();
@@ -63,7 +62,7 @@ class Dispatcher
         } else {
             // 返回404
             $response->withStatus(404);
-            $response->write('<h1>我是404</h1>');
+            $response->write('<h1>page not found</h1>');
         }
     }
 }

@@ -10,4 +10,14 @@ class IndexController extends Controller
         $name = $this->request()->get('name');
         $this->write("<h1>Hello! {$name}</h1>");
     }
+
+    public function json()
+    {
+        // 注意：在 writeJson 方法与 write 方法不要在一次 response 中同时使用，否则会破坏数据的 json 格式
+        $this->writeJson([
+            'msg' => '获取json成功',
+            'code' => 2,
+            'data' => 'json'
+        ], 200);
+    }
 }

@@ -10,7 +10,7 @@ class Router
     public function __construct($method, $path)
     {
         $this->method = $method;
-        $this->requestPath = $path;
+        $this->requestPath = ltrim($path, '/');
     }
 
     public function dispatch()

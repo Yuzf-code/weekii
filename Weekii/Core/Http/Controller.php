@@ -13,32 +13,33 @@ abstract class Controller
         $this->response = $response;
     }
 
-    public function write($string) {
+    protected function write($string) {
         $this->response->write($string);
     }
 
-    public function writeJson(array $params, int $code)
+    protected function writeJson(array $params, int $code)
     {
         $this->response()->withStatus($code);
         $this->response()->write(json_encode($params));
+        $this->response()->header('Content-type','application/json;charset=utf-8');
     }
 
-    public function request()
+    protected function request()
     {
         return $this->request;
     }
 
-    public function response()
+    protected function response()
     {
         return $this->response;
     }
 
-    public function redirect($url, int $code)
+    protected function redirect($url, int $code)
     {
         $this->response->redirect($url, $code);
     }
 
-    public function getActionName()
+    protected function getActionName()
     {
         return $this->request->getActionName();
     }
@@ -46,6 +47,5 @@ abstract class Controller
     protected function actionNotFound($actionName)
     {
         $this->response()->withStatus(404);
-        $this->write("<h1>Action: {$actionName} not found</h1>");
     }
 }
