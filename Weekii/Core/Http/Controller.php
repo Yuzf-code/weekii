@@ -2,15 +2,22 @@
 
 namespace Weekii\Core\Http;
 
+use duncan3dc\Laravel\BladeInstance;
+use Weekii\Lib\Config;
+
 abstract class Controller
 {
-    private $request;
-    private $response;
+    protected $request;
+    protected $response;
+    protected $view;
 
-    public function __construct(Request $request, Response $response)
+    protected $tplVar = [];
+
+    public function __construct(Request $request, Response $response, BladeInstance $view)
     {
         $this->request = $request;
         $this->response = $response;
+        $this->view = $view;
     }
 
     protected function write($string) {
@@ -47,5 +54,21 @@ abstract class Controller
     protected function actionNotFound($actionName)
     {
         $this->response()->withStatus(404);
+    }
+
+    protected function assign($tplVar, $value = null)
+    {
+        if (is_array($tplVar)) {
+            $this->tplVar = $tplVar;
+        } else {
+            $this->tplVar[$tplVar] = $value;
+        }
+    }
+
+    protected function fetch(string $view, array $params = [])
+    {
+        $params = array_merge($params, $this->tplVar);
+        $content = $this->view->render($view, $params);
+        $this->response->write($content);
     }
 }

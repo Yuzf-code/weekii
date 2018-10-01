@@ -1,6 +1,8 @@
 <?php
 namespace Weekii\Core\Http;
 
+use duncan3dc\Laravel\BladeInstance;
+
 class Dispatcher
 {
     // 控制器命名空间前缀
@@ -14,14 +16,13 @@ class Dispatcher
     /**
      * 调度
      */
-    public function dispatch(Request $request, Response $response)
+    public function dispatch(Request $request, Response $response, BladeInstance $view)
     {
         $router = new Router($request->getMethod(), $request->getPathInfo());
 
         $routeInfo = $router->dispatch();
         switch ($routeInfo['status']) {
             case RouteRule::NOT_FOUND:
-                $request->setControllerNamespace($this->nameSpacePrefix . $routeInfo['target']);
                 $list = explode('/', $routeInfo['target']);
                 $controllerNamespace = $this->nameSpacePrefix;
                 for ($i = 0; $i < count($list) - 1; $i++) {
@@ -45,14 +46,14 @@ class Dispatcher
                 break;
         }
 
-        $this->runAction($request, $response);
+        $this->runAction($request, $response, $view);
     }
 
-    public function runAction(Request $request, Response $response)
+    public function runAction(Request $request, Response $response, BladeInstance $view)
     {
         $controllerNamespace = $request->getControllerNamespace();
         if (class_exists($controllerNamespace)) {
-            $obj = new $controllerNamespace($request, $response);
+            $obj = new $controllerNamespace($request, $response, $view);
             $actionName = $request->getActionName();
             if (method_exists($obj, $actionName)) {
                 $obj->$actionName();

@@ -2,6 +2,7 @@
 namespace Weekii\Core\Swoole;
 
 
+use duncan3dc\Laravel\BladeInstance;
 use Weekii\Core\Container;
 use Weekii\Core\Http\Dispatcher;
 use Weekii\Core\Http\Request;
@@ -29,9 +30,10 @@ class EventHelper
         $register->set($register::onRequest, function (\swoole_http_request $swooleRequest, \swoole_http_response $swooleResponse) use ($dispatcher) {
             $request = new Request($swooleRequest);
             $response = new Response($swooleResponse);
+            $view = new BladeInstance(PROJECT_ROOT . '/App/Http/View', Config::getInstance()->get('app')['tempDir'] . '/templates');
             try {
                 GlobalEvent::onRequest($request, $response);
-                $dispatcher->dispatch($request, $response);
+                $dispatcher->dispatch($request, $response, $view);
                 GlobalEvent::afterAction($request, $response);
             } catch (\Throwable $throwable) {
                 echo $throwable->getMessage();

@@ -6,3 +6,4 @@ RouteRule::get('/', function (\Weekii\Core\Http\Request $request, \Weekii\Core\H
 });
 
 RouteRule::get('/hello/:name', \App\Http\Controller\IndexController::class . '@hello');
+RouteRule::get('/view/:name', \App\Http\Controller\IndexController::class . '@view');

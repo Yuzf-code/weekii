@@ -25,5 +25,8 @@ return array(
     // 路由缓存表名称 (Container 中的 key)
     'routeTableName' => 'routeTable',
 
+    // 临时文件夹
+    'tempDir' => PROJECT_ROOT . '/temp',
+
     'timezone' => 'Asia/Shanghai',
 );

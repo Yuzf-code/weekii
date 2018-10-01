@@ -74,9 +74,8 @@ class RouteRule
 
         // 规则匹配成功
         if (!empty($result)) {
-
-            if (self::$routeCache) {
-                // 只有解析成功过的才缓存
+            // 只有解析成功过的才缓存且暂时只缓存目标为控制器的路由，闭包的话感觉还是不太必要
+            if (self::$routeCache && is_string($result['target'])) {
                 self::$routeCacheTable->set($method . '@' . $path, [
                     'status' => $result['status'],
                     'target' => $result['target'],
