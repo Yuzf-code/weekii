@@ -22,6 +22,15 @@ class ServerManager
         $this->server->start();
     }
 
+    public function getServer()
+    {
+        if ($this->isStart) {
+            return $this->server;
+        } else {
+            return null;
+        }
+    }
+
     private function createServer()
     {
         $conf = Config::getInstance()->get('app')['swooleServer'];
@@ -58,6 +67,8 @@ class ServerManager
 
         return $this->server;
     }
+
+
 
     private function beforeServerStart(EventRegister $register)
     {

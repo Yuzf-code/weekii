@@ -9,6 +9,9 @@
 namespace Weekii\Core\Http;
 
 
+use Weekii\Core\Container;
+use Weekii\Lib\Config;
+
 class RouteRule
 {
     const FOUND = 1;
@@ -18,10 +21,16 @@ class RouteRule
     private static $needInit = true;
     private static $rule = [];
 
+    private static $routeCache = false;
+    private static $routeCacheTable = null;
+
     // 导入路由规则
     public static function init()
     {
         if (self::$needInit) {
+
+            self::cacheHandle();
+
             $directory =PROJECT_ROOT . '/App/Http/Routes/';
             $file = scandir($directory);
             foreach ($file as $item) {
@@ -35,8 +44,26 @@ class RouteRule
         }
     }
 
+    private static function cacheHandle()
+    {
+        // 路由缓存相关
+        if (Config::getInstance()->get('app')['routeCache']) {
+            self::$routeCache = true;
+            self::$routeCacheTable = Container::getInstance()->get(Config::getInstance()->get('app')['routeTableName']);
+        }
+    }
+
     public static function runRule($method, $path)
     {
+        // 路由缓存相关
+        if (self::$routeCache) {
+            if (self::$routeCacheTable->exist($method . '@' . $path)) {
+                $result = self::$routeCacheTable->get($method . '@' . $path);
+                $result['args'] = json_decode($result['args'], true);
+                return $result;
+            }
+        }
+
         // 先尝试匹配当前方法的规则
         $result = self::runRuleGroup($method, $path);
 
@@ -47,6 +74,16 @@ class RouteRule
 
         // 规则匹配成功
         if (!empty($result)) {
+
+            if (self::$routeCache) {
+                // 只有解析成功过的才缓存
+                self::$routeCacheTable->set($method . '@' . $path, [
+                    'status' => $result['status'],
+                    'target' => $result['target'],
+                    'args' => json_encode($result['args'])
+                ]);
+            }
+
             return $result;
         }
 
@@ -92,7 +129,6 @@ class RouteRule
                 'args' => $args
             ];
         }
-
         // 没有匹配规则
         return false;
     }
@@ -100,6 +136,8 @@ class RouteRule
     public static function rule($pattern, $target, $method = '*')
     {
         $methodGroup = $method;
+        $pattern = trim($pattern, '/');
+
         if (strpos($method, '|')) {
             $methodGroup = '*';
         }

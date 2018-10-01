@@ -18,5 +18,12 @@ return array(
         ]
     ],
 
+    // 是否开启路由缓存
+    'routeCache' => true,
+    // 路由缓存内存表大小
+    'routeTableSize' => 65536,
+    // 路由缓存表名称 (Container 中的 key)
+    'routeTableName' => 'routeTable',
+
     'timezone' => 'Asia/Shanghai',
 );
