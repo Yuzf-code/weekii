@@ -29,7 +29,7 @@ class Response
 
     public function setCookie($key, $value, $expire = 0, $path = '/', $domain = '')
     {
-        $this->swooleResponse->cookie($key, $value, $path, $domain);
+        $this->swooleResponse->cookie($key, $value, $expire, $path, $domain);
     }
 
     public function redirect($url, int $httpCode = 302)
