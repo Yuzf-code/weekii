@@ -36,7 +36,9 @@ class EventHelper
                 $dispatcher->dispatch($request, $response, $view);
                 GlobalEvent::afterAction($request, $response);
             } catch (\Throwable $throwable) {
-                echo $throwable->getMessage();
+                echo $throwable->getFile() . "\n";
+                echo $throwable->getLine() . "\n";
+                echo $throwable->getMessage() . "\n";
             }
         });
     }

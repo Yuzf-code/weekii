@@ -1,7 +1,10 @@
 <?php
 namespace App\Http\Controller;
 
+use Illuminate\Database\Capsule\Manager;
 use Weekii\Core\Http\Controller;
+use Illuminate\Database\Capsule\Manager as Capsule;
+use Weekii\Lib\Config;
 
 class IndexController extends Controller
 {
@@ -25,6 +28,25 @@ class IndexController extends Controller
             'msg' => '获取json成功',
             'code' => 2,
             'data' => 'json'
+        ], 200);
+    }
+
+    public function db()
+    {
+        $conf = Config::getInstance()->get('app');
+        $capsule = new Manager();
+        foreach ($conf['database'] as $name => $item) {
+            $capsule->addConnection($item, $name);
+        }
+        $capsule->bootEloquent();
+        $cid = \Co::getuid();
+        $connection = $capsule->getConnection('mysql');
+        $data = $connection->table('swf_area')->where('sa_id', '10' . $cid)->first();
+
+        $this->writeJson([
+            'msg' => '获取数据成功:' . $cid,
+            'code' => 2,
+            'data' => $data
         ], 200);
     }
 }
