@@ -8,7 +8,6 @@
 
 namespace Weekii\Core;
 
-
 use Weekii\Core\BaseInterface\Singleton;
 
 class Container
@@ -28,24 +27,23 @@ class Container
         );
     }
 
-    function delete($key)
+    public function delete($key)
     {
         unset( $this->container[$key]);
     }
 
-    function clear()
+    // 清空操作太敏感，暂时先注释掉
+    /*public function clear()
     {
         $this->container = array();
-    }
+    }*/
 
-    function get($key)
+    public function get($key)
     {
         if(isset($this->container[$key])){
             $result = $this->container[$key];
-            if(is_object($result['obj'])){
+            if(is_object($result['obj']) || is_callable($result['obj'])){
                 return $result['obj'];
-            }else if(is_callable($result['obj'])){
-                return $this->container[$key]['obj'];
             }else if(is_string($result['obj']) && class_exists($result['obj'])){
                 $reflection = new \ReflectionClass ( $result['obj'] );
                 $ins =  $reflection->newInstanceArgs ( $result['params'] );

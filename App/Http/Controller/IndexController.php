@@ -34,19 +34,6 @@ class IndexController extends Controller
     public function db()
     {
         $conf = Config::getInstance()->get('app');
-        $capsule = new Manager();
-        foreach ($conf['database'] as $name => $item) {
-            $capsule->addConnection($item, $name);
-        }
-        $capsule->bootEloquent();
-        $cid = \Co::getuid();
-        $connection = $capsule->getConnection('mysql');
-        $data = $connection->table('swf_area')->where('sa_id', '10' . $cid)->first();
 
-        $this->writeJson([
-            'msg' => '获取数据成功:' . $cid,
-            'code' => 2,
-            'data' => $data
-        ], 200);
     }
 }

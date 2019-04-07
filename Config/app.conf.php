@@ -7,7 +7,7 @@ return array(
         // 服务类型
         'type' => \Weekii\Core\Swoole\ServerManager::TYPE_HTTP,
         'port' => 9501,
-        'host' => '127.0.0.1',
+        'host' => '0.0.0.0',
         'mode' => SWOOLE_PROCESS,
         'sockType' => SWOOLE_TCP,
         'setting' => [
@@ -22,12 +22,12 @@ return array(
     'database' => [
         'mysql' => [
             'driver'    => 'mysql',
-            'host'      => '127.0.0.1',
-            'database'  => 'test',
-            'username'  => 'root',
-            'password'  => 'Yzf15079882879.',
-            'charset'   => 'utf8',
-            'collation' => 'utf8_unicode_ci',
+            'host'      => 's3.takecloud.cn',
+            'database'  => 'card',
+            'username'  => 'card',
+            'password'  => 'card@123',
+            'charset'   => 'utf8mb4',
+            'collation' => 'utf8mb4_general_ci',
             //'unix_socket' => '/var/lib/mysql/mysql.sock',
             'prefix'    => '',
             'port'      => 3306,
@@ -37,7 +37,7 @@ return array(
     // 是否开启路由缓存
     'routeCache' => true,
     // 路由缓存内存表大小
-    'routeTableSize' => 65536,
+    'routeTableSize' => 1024,
     // 路由缓存表名称 (Container 中的 key)
     'routeTableName' => '__routeTable',
 
