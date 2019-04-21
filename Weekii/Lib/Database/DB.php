@@ -6,7 +6,7 @@
  * Time: 0:14
  */
 
-namespace Weekii\Lib;
+namespace Weekii\Lib\Database;
 
 
 use Weekii\Core\BaseInterface\Singleton;

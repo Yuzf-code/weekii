@@ -6,7 +6,9 @@
  * Time: 16:06
  */
 
-namespace Weekii\Core\Swoole\Coroutine\Context;
+namespace Weekii\Lib\Context;
+
+use Weekii\Core\Swoole\Coroutine\Context\Context;
 
 /**
  * DB Coroutine Context Manager
