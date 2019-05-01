@@ -2,6 +2,8 @@
 
 namespace Weekii\Lib\Database;
 
+use Weekii\Lib\Util\Str;
+
 /**
  * 数据库链接类
  * 包含基本CURD操作封装
@@ -13,15 +15,25 @@ class Connection
     // 链接句柄
     protected $pdo;
 
+    protected $options;
+
     /**
      * 初始化链接
      * Connection constructor.
      */
     public function __construct($options)
     {
-        $dsn = $options['driver'] . ':host=' . $options['host'] . ';dbname=' . $options['database'];
+        $this->options = $options;
+        $this->connect();
+    }
 
-        $this->pdo = new \PDO($dsn, $options['username'], $options['password']);
+    /**
+     * 创建连接
+     */
+    protected function connect()
+    {
+        $dsn = $this->options['driver'] . ':host=' . $this->options['host'] . ';dbname=' . $this->options['database'];
+        $this->pdo = new \PDO($dsn, $this->options['username'], $this->options['password']);
     }
 
     /**
@@ -31,6 +43,15 @@ class Connection
     public function close()
     {
         $this->pdo = null;
+    }
+
+    /**
+     * 重连
+     */
+    public function reconnect()
+    {
+        $this->close();
+        $this->connect();
     }
 
     /**
@@ -50,11 +71,13 @@ class Connection
      */
     public function select($query, $bindings = [])
     {
-        $statement = $this->getStatement($query, $bindings);
+        return $this->run($query, $bindings, function ($query, $bindings) {
+            $statement = $this->getStatement($query, $bindings);
 
-        $statement->execute();
+            $statement->execute();
 
-        return $statement->fetchAll();
+            return $statement->fetchAll();
+        });
     }
 
     /**
@@ -65,11 +88,13 @@ class Connection
      */
     public function selectOne($query, $bindings = [])
     {
-        $statement = $this->getStatement($query, $bindings);
+        return $this->run($query, $bindings, function ($query, $bindings) {
+            $statement = $this->getStatement($query, $bindings);
 
-        $statement->execute();
+            $statement->execute();
 
-        return $statement->fetch();
+            return $statement->fetch();
+        });
     }
 
     /**
@@ -79,9 +104,11 @@ class Connection
      */
     public function insert($query, $bindings = [])
     {
-        $statement = $this->getStatement($query, $bindings);
+        return $this->run($query, $bindings, function ($query, $bindings) {
+            $statement = $this->getStatement($query, $bindings);
 
-        return $statement->execute();
+            return $statement->execute();
+        });
     }
 
     /**
@@ -121,6 +148,7 @@ class Connection
     }
 
     /**
+     * 查询预处理
      * @param $query
      * @param array $bindings
      * @return bool|\PDOStatement
@@ -141,15 +169,30 @@ class Connection
      */
     public function affectingStatement($query, $bindings = [])
     {
-        $statement = $this->getStatement($query, $bindings);
+        return $this->run($query, $bindings, function ($query, $bindings) {
+            $statement = $this->getStatement($query, $bindings);
 
-        $statement->execute();
+            $statement->execute();
 
-        return $statement->rowCount();
+            return $statement->rowCount();
+        });
     }
 
+    /**
+     * 运行查询
+     * @param $query
+     * @param $bindings
+     * @param \Closure $callback
+     * @return mixed
+     * @throws QueryException
+     */
     protected function run($query, $bindings, \Closure $callback)
     {
+        // 失去pdo连接对象，重连一下
+        if (is_null($this->pdo)) {
+            $this->connect();
+        }
+
         try {
             $result = $this->runQueryCallback($query, $bindings, $callback);
         } catch (QueryException $e) {
@@ -191,13 +234,52 @@ class Connection
         return $bindings;
     }
 
+    /**
+     * 错误处理
+     * @param $sql
+     * @param array $bindings
+     * @param \Closure $callback
+     * @param QueryException $e
+     * @return mixed
+     * @throws QueryException
+     */
     protected function handleQueryException($sql, array $bindings, \Closure $callback, QueryException $e)
     {
-        // TODO 断线重连
-        return $this->runQueryCallback($sql, $bindings, $callback);
-
-        // TODO 抛出异常
+        // 断线重连
+        if ($this->causedByLostConnection($e->getPrevious())) {
+            $this->reconnect();
+            return $this->runQueryCallback($sql, $bindings, $callback);
+        }
 
         // TODO 错误日志
+
+        throw $e;
+    }
+
+    /**
+     * 是否由断线应发的异常
+     * @param \Throwable $e
+     * @return bool
+     */
+    protected function causedByLostConnection(\Throwable $e)
+    {
+        $message = $e->getMessage();
+
+        return Str::contains($message, [
+            'server has gone away',
+            'no connection to the server',
+            'Lost connection',
+            'is dead or not enabled',
+            'Error while sending',
+            'decryption failed or bad record mac',
+            'server closed the connection unexpectedly',
+            'SSL connection has been closed unexpectedly',
+            'Error writing data to the connection',
+            'Resource deadlock avoided',
+            'Transaction() on null',
+            'child connection forced to terminate due to client_idle_limit',
+            'query_wait_timeout',
+            'reset by peer',
+        ]);
     }
 }

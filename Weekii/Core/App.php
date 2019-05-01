@@ -5,19 +5,19 @@ use Weekii\Core\Swoole\ServerManager;
 use Weekii\GlobalEvent;
 use Weekii\Lib\Config;
 
-class Weekii
+class App extends Container
 {
-    public static function run ()
+    public function run ()
     {
         define('WEEKII_ROOT', realpath(getcwd()));
         define('PROJECT_ROOT', WEEKII_ROOT . '/../..');
         define('CONFIG_PATH', PROJECT_ROOT . '/Config');
 
-        self::init();
+        $this->init();
         ServerManager::getInstance()->start();
     }
 
-    public static function init()
+    private function init()
     {
         ini_set("display_errors","0");
         error_reporting(0);
@@ -26,18 +26,19 @@ class Weekii
             require_once PROJECT_ROOT . '/GlobalEvent.php';
         }
         GlobalEvent::frameInit();
-        self::errorHandle();
+        $this->errorHandle();
     }
 
-    private static function errorHandle()
+    private function errorHandle()
     {
-        $debug = Config::getInstance()->get('app');
+        $debug = Config::getInstance()->get('app')['debug'];
         if (!$debug) {
             return;
         }
 
-        $handler = Container::getInstance()->get(Constant::USER_ERROR_HANDLER);
-        if (!is_callable($handler)) {
+        if (isset($this[Constant::USER_ERROR_HANDLER]) && is_callable($this[Constant::USER_ERROR_HANDLER])) {
+            $handler = $this[Constant::USER_ERROR_HANDLER];
+        } else {
             $handler = function () {
                 $error = error_get_last();
                 $typeMap = array('1'=>'E_ERROR','2' => 'E_WARNING','4'=>'E_PARSE','8'=>'E_NOTICE','64'=>'E_COMPILE_ERROR');

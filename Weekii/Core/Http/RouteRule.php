@@ -9,7 +9,7 @@
 namespace Weekii\Core\Http;
 
 
-use Weekii\Core\Container;
+use Weekii\Core\App;
 use Weekii\Lib\Config;
 
 class RouteRule
@@ -49,7 +49,7 @@ class RouteRule
         // 路由缓存相关
         if (Config::getInstance()->get('app')['routeCache']) {
             self::$routeCache = true;
-            self::$routeCacheTable = Container::getInstance()->get(Config::getInstance()->get('app')['routeTableName']);
+            self::$routeCacheTable = App::getInstance()->get(Config::getInstance()->get('app')['routeTableName']);
         }
     }
 

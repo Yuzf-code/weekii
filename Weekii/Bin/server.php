@@ -2,4 +2,4 @@
 
 require_once '../../vendor/autoload.php';
 
-\Weekii\Core\Weekii::run();
+\Weekii\Core\App::getInstance()->run();
