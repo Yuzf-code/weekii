@@ -52,21 +52,7 @@ class ServerManager
                 throw new \Exception('Unknown server type : ' . $conf['type']);
         }
 
-        $this->server->set($conf['setting']);
-        $register = new EventRegister();
-        $this->beforeServerStart($register);
 
-        $eventList = $register->all();
-
-        foreach ($eventList as $event => $handles) {
-            $this->server->on($event, function () use ($handles) {
-                $args = func_get_args();
-
-                foreach ($handles as $callback) {
-                    call_user_func_array($callback, $args);
-                }
-            });
-        }
 
         return $this->server;
     }
@@ -75,6 +61,6 @@ class ServerManager
 
     private function beforeServerStart(EventRegister $register)
     {
-        EventHelper::registerDefaultOnRequest($register);
+
     }
 }

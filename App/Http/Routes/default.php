@@ -1,7 +1,7 @@
 <?php
 use Weekii\Core\Http\RouteRule;
 
-RouteRule::get('/', function (\Weekii\Core\Http\Request $request, \Weekii\Core\Http\Response $response) {
+RouteRule::get('/', function (\Weekii\Core\Http\Request $request, \Weekii\Core\Http\Response $response, \duncan3dc\Laravel\BladeInstance $view) {
     $response->redirect('/hello/' . $request->get('name'));
 });
 

@@ -20,7 +20,7 @@ return array(
     ],
 
     'database' => [
-        'mysql' => [
+        'default' => [
             'driver'    => 'mysql',
             'host'      => 's3.takecloud.cn',
             'database'  => 'card',
@@ -29,8 +29,10 @@ return array(
             'charset'   => 'utf8mb4',
             'collation' => 'utf8mb4_general_ci',
             //'unix_socket' => '/var/lib/mysql/mysql.sock',
-            'prefix'    => '',
+            'prefix'    => 't_',
             'port'      => 3306,
+            'getConnectionTimeout' => 1,  // 获取连接最多等待秒数
+            'poolSize' => 50
         ]
     ],
 
@@ -45,4 +47,11 @@ return array(
     'tempDir' => PROJECT_ROOT . '/temp',
 
     'timezone' => 'Asia/Shanghai',
+
+    'providers' => [
+        /** Framework Service Providers **/
+        \Weekii\Core\Http\HttpServiceProvider::class,
+        \Weekii\Lib\Database\DatabaseServiceProvider::class,
+        \Weekii\Lib\Pool\PoolServiceProvider::class
+    ],
 );

@@ -3,10 +3,16 @@
 namespace Weekii\Core\Http;
 
 use duncan3dc\Laravel\BladeInstance;
-use Weekii\Lib\Config;
+use Weekii\Core\App;
 
+/**
+ * Class Controller
+ * @property App $app
+ * @package Weekii\Core\Http
+ */
 abstract class Controller
 {
+    protected $app;
     protected $request;
     protected $response;
     protected $view;
@@ -15,6 +21,7 @@ abstract class Controller
 
     public function __construct(Request $request, Response $response, BladeInstance $view)
     {
+        $this->app = App::getInstance();
         $this->request = $request;
         $this->response = $response;
         $this->view = $view;

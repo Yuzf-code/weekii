@@ -33,7 +33,16 @@ class IndexController extends Controller
 
     public function db()
     {
-        $conf = Config::getInstance()->get('app');
+        var_dump($this->app->db->getPrefix());
 
+        $tableName = $this->app->db->tableName('member');
+
+        $data = $this->app->db->selectOne('select * from ' . $tableName . ' where id = ?', [340]);
+
+        $this->writeJson([
+            'msg' => '获取json成功',
+            'code' => 2,
+            'data' => $data
+        ], 200);
     }
 }

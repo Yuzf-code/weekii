@@ -3,6 +3,7 @@ namespace Weekii\Core\Swoole;
 
 
 use duncan3dc\Laravel\BladeInstance;
+use Weekii\Core\App;
 use Weekii\Core\Http\Dispatcher;
 use Weekii\Core\Http\Request;
 use Weekii\Core\Http\Response;
@@ -13,10 +14,10 @@ class EventHelper
 {
     public static function registerDefaultOnRequest(EventRegister $register, $controllerNameSpace = 'App\\Http\\Controller\\')
     {
-
-
+        /** 发现很多小伙伴不喜欢看源码，既然这样就让他们只有看了源码才能改路由调度方式，哈哈哈 **/
         // 默认路由调度
-        $dispatcher = new Dispatcher($controllerNameSpace);
+        //$dispatcher = new Dispatcher($controllerNameSpace);
+        $dispatcher = App::getInstance()->make(Dispatcher::class, [$controllerNameSpace]);
         $register->set($register::onRequest, function (\swoole_http_request $swooleRequest, \swoole_http_response $swooleResponse) use ($dispatcher) {
             $request = new Request($swooleRequest);
             $response = new Response($swooleResponse);
@@ -29,6 +30,7 @@ class EventHelper
                 echo $throwable->getFile() . "\n";
                 echo $throwable->getLine() . "\n";
                 echo $throwable->getMessage() . "\n";
+                // TODO 路由调度异常处理
             }
         });
     }

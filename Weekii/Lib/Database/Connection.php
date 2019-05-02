@@ -34,6 +34,8 @@ class Connection
     {
         $dsn = $this->options['driver'] . ':host=' . $this->options['host'] . ';dbname=' . $this->options['database'];
         $this->pdo = new \PDO($dsn, $this->options['username'], $this->options['password']);
+
+        $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     }
 
     /**

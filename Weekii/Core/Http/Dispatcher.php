@@ -6,7 +6,7 @@ use duncan3dc\Laravel\BladeInstance;
 class Dispatcher
 {
     // 控制器命名空间前缀
-    private $nameSpacePrefix;
+    protected $nameSpacePrefix;
 
     public function __construct($controllerNameSpace)
     {
@@ -37,7 +37,9 @@ class Dispatcher
                 $request->setRequestParams($routeInfo['args'] + $params);
 
                 if (is_callable($routeInfo['target'])) {
-                    call_user_func_array($routeInfo['target'], [$request, $response]);
+                    // 未绑定控制器，直接调用
+                    call_user_func_array($routeInfo['target'], [$request, $response, $view]);
+                    return;
                 } elseif (is_string($routeInfo['target'])) {
                     $list = explode('@', $routeInfo['target']);
                     $request->setControllerNamespace($list[0]);

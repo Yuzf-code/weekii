@@ -4,7 +4,13 @@ namespace Weekii\Core;
 use Weekii\Core\Swoole\ServerManager;
 use Weekii\GlobalEvent;
 use Weekii\Lib\Config;
+use Weekii\Lib\Database\DB;
 
+/**
+ * Class App
+ * @property DB $db
+ * @package Weekii\Core
+ */
 class App extends Container
 {
     public function run ()
@@ -17,14 +23,23 @@ class App extends Container
         ServerManager::getInstance()->start();
     }
 
+    /**
+     * 应用初始化
+     * @throws \Exception
+     */
     private function init()
     {
         ini_set("display_errors","0");
         error_reporting(0);
+        \Swoole\Runtime::enableCoroutine();
 
         if (file_exists(PROJECT_ROOT . '/GlobalEvent.php')) {
             require_once PROJECT_ROOT . '/GlobalEvent.php';
         }
+
+        // 注册服务提供者
+        $this->registerServiceProviders();
+
         GlobalEvent::frameInit();
         $this->errorHandle();
     }
@@ -47,5 +62,25 @@ class App extends Container
             };
         }
         register_shutdown_function($handler);
+    }
+
+    /**
+     * 注册服务提供者
+     * @throws \Exception
+     */
+    private function registerServiceProviders()
+    {
+        $providers = Config::getInstance()->get('app')['providers'];
+        foreach ($providers as $providerClass) {
+            if (class_exists($providerClass)) {
+                $provider = new $providerClass($this);
+                if ($provider instanceof ServiceProvider) {
+                    $provider->boot();
+                    $provider->register();
+                } else {
+                    throw new \Exception('Class' . $providerClass . 'must be extends ServiceProvider');
+                }
+            }
+        }
     }
 }

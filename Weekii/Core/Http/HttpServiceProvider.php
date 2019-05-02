@@ -11,6 +11,9 @@ namespace Weekii\Core\Http;
 
 use Weekii\Core\Constant;
 use Weekii\Core\ServiceProvider;
+use Weekii\Core\Swoole\EventHelper;
+use Weekii\Core\Swoole\EventRegister;
+use Weekii\GlobalEvent;
 use Weekii\Lib\Config;
 
 class HttpServiceProvider extends ServiceProvider
@@ -37,21 +40,43 @@ class HttpServiceProvider extends ServiceProvider
             $table->create();
 
             //Container::getInstance()->set(Config::getInstance()->get('app')['routeTableName'], $table);
-            $this->app->bind(Config::getInstance()->get('app')['routeTableName'], function () use ($table) {
+            $this->app->singleton(Config::getInstance()->get('app')['routeTableName'], function () use ($table) {
                 return $table;
             });
         }
 
-        $this->app->bind(Dispatcher::class, function ($controllerNameSpace) {
+        $this->app->singleton(Dispatcher::class, function ($controllerNameSpace) {
             return new Dispatcher($controllerNameSpace);
         });
     }
 
     protected function registerServer()
     {
-        $this->app->bind(Constant::HTTP_SERVER, function () {
+        $this->app->singleton(Constant::HTTP_SERVER, function () {
             $conf = Config::getInstance()->get('app')['swooleServer'];
-            return new \swoole_http_server($conf['host'], $conf['port'], $conf['mode'], $conf['sockType']);
+
+            $server = new \swoole_http_server($conf['host'], $conf['port'], $conf['mode'], $conf['sockType']);
+
+            $server->set($conf['setting']);
+            $register = new EventRegister();
+
+            GlobalEvent::serverCreate($server, $register);
+            EventHelper::registerDefaultOnRequest($register);
+
+            $eventList = $register->all();
+
+            // 注册swoole事件回调
+            foreach ($eventList as $event => $handles) {
+                $server->on($event, function () use ($handles) {
+                    $args = func_get_args();
+
+                    foreach ($handles as $callback) {
+                        call_user_func_array($callback, $args);
+                    }
+                });
+            }
+
+            return $server;
         });
     }
 }

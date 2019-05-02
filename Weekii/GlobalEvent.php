@@ -20,7 +20,7 @@ class GlobalEvent
         // your code
     }
 
-    public static function serverCreate(ServerManager $serverManager, EventRegister $register) {
+    public static function serverCreate(\swoole_server $server, EventRegister $register) {
 
     }
 

@@ -60,6 +60,26 @@ class Container implements \ArrayAccess
     }
 
     /**
+     * 注册单例
+     * @param $key
+     * @param \Closure $concrete
+     */
+    public function singleton($key, \Closure $concrete)
+    {
+        $this->bind($key, $concrete, true);
+    }
+
+    /**
+     * 注册一个已有实例到容器
+     * @param $key
+     * @param $instance
+     */
+    public function instance($key, $instance)
+    {
+        $this->container[$key] = $instance;
+    }
+
+    /**
      * 从容器解析指定对象
      * @param $key
      * @param array $parameters
@@ -83,6 +103,8 @@ class Container implements \ArrayAccess
 
         return $object;
     }
+
+    // TODO 依赖注入。。。
 
     /**
      * 该对象是否共享(是否单例)
