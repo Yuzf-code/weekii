@@ -75,12 +75,13 @@ class App extends Container
             if (class_exists($providerClass)) {
                 $provider = new $providerClass($this);
                 if ($provider instanceof ServiceProvider) {
-                    $provider->boot();
                     $provider->register();
                 } else {
                     throw new \Exception('Class' . $providerClass . 'must be extends ServiceProvider');
                 }
             }
         }
+
+        // TODO providers boot
     }
 }

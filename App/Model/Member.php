@@ -9,7 +9,11 @@
 namespace App\Model;
 
 
-class Member
-{
+use Weekii\Lib\Database\Model;
 
+class Member extends Model
+{
+    protected $table = 'member';
+
+    protected $primaryKey = 'id';
 }

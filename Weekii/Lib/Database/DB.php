@@ -12,6 +12,7 @@ use Weekii\Lib\Pool\Pool;
 /**
  * Class DB
  * @method selectOne($query, $bindings = [])
+ * @method select($query, $bindings = [])
  * @package Weekii\Lib\Database
  */
 class DB

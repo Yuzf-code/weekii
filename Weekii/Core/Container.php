@@ -96,6 +96,8 @@ class Container implements \ArrayAccess
         // 制造对象
         $object = call_user_func_array($this->getConcrete($key), $parameters);
 
+        // TODO 依赖注入。。。
+
         if ($this->isShared($key)) {
             // 需要共享
             $this->container[$key] = $object;
@@ -103,8 +105,6 @@ class Container implements \ArrayAccess
 
         return $object;
     }
-
-    // TODO 依赖注入。。。
 
     /**
      * 该对象是否共享(是否单例)

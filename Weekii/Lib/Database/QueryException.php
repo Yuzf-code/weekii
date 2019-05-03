@@ -27,5 +27,7 @@ class QueryException extends \Exception
         $this->bindings = $bindings;
         $this->previous = $previous;
         $this->code = $previous->getCode();
+
+        $this->message = 'SQL ERROR: ' . $this->sql . "\n" .  'Params: ' . json_encode($bindings);
     }
 }

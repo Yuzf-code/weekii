@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controller;
 
+use App\Model\Member;
 use Illuminate\Database\Capsule\Manager;
 use Weekii\Core\Http\Controller;
 use Illuminate\Database\Capsule\Manager as Capsule;
@@ -33,16 +34,24 @@ class IndexController extends Controller
 
     public function db()
     {
-        var_dump($this->app->db->getPrefix());
+        /*var_dump($this->app->db->getPrefix());
 
         $tableName = $this->app->db->tableName('member');
 
-        $data = $this->app->db->selectOne('select * from ' . $tableName . ' where id = ?', [340]);
+        $data = $this->app->db->selectOne('select * from ' . $tableName . ' where id = ?', [340]);*/
+
+        $memberModel = new Member();
+
+        $data = $memberModel->find(340);
+
+        //$data = $memberModel->where('signature', 'LIKE', '%一批%')->first();
+
+        var_dump($data->signature);
 
         $this->writeJson([
             'msg' => '获取json成功',
             'code' => 2,
-            'data' => $data
+            'data' => $data->signature
         ], 200);
     }
 }

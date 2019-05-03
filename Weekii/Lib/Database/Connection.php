@@ -78,7 +78,7 @@ class Connection
 
             $statement->execute();
 
-            return $statement->fetchAll();
+            return $statement->fetchAll(\PDO::FETCH_ASSOC);
         });
     }
 
@@ -90,13 +90,8 @@ class Connection
      */
     public function selectOne($query, $bindings = [])
     {
-        return $this->run($query, $bindings, function ($query, $bindings) {
-            $statement = $this->getStatement($query, $bindings);
 
-            $statement->execute();
-
-            return $statement->fetch();
-        });
+        return array_shift($this->select($query, $bindings));
     }
 
     /**
@@ -167,7 +162,8 @@ class Connection
      * 执行具有影响的操作
      * @param $query
      * @param array $bindings
-     * @return int 影响行数
+     * @return mixed
+     * @throws QueryException
      */
     public function affectingStatement($query, $bindings = [])
     {
