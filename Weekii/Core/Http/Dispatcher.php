@@ -2,14 +2,18 @@
 namespace Weekii\Core\Http;
 
 use duncan3dc\Laravel\BladeInstance;
+use Weekii\Core\App;
 
 class Dispatcher
 {
+    // 应用容器
+    protected $app;
     // 控制器命名空间前缀
     protected $nameSpacePrefix;
 
-    public function __construct($controllerNameSpace)
+    public function __construct(App $app, $controllerNameSpace)
     {
+        $this->app = $app;
         $this->nameSpacePrefix = trim($controllerNameSpace, '\\');
     }
 
@@ -58,7 +62,8 @@ class Dispatcher
             $obj = new $controllerNamespace($request, $response, $view);
             $actionName = $request->getActionName();
             if (method_exists($obj, $actionName)) {
-                $obj->$actionName();
+                //$obj->$actionName();
+                $this->app->call([$obj, $actionName]);
             } else {
                 $obj->actionNotFound();
             }

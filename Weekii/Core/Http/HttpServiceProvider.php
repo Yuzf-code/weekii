@@ -46,7 +46,7 @@ class HttpServiceProvider extends ServiceProvider
         }
 
         $this->app->singleton(Dispatcher::class, function ($controllerNameSpace) {
-            return new Dispatcher($controllerNameSpace);
+            return new Dispatcher($this->app, $controllerNameSpace);
         });
     }
 

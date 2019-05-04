@@ -2,10 +2,7 @@
 namespace App\Http\Controller;
 
 use App\Model\Member;
-use Illuminate\Database\Capsule\Manager;
 use Weekii\Core\Http\Controller;
-use Illuminate\Database\Capsule\Manager as Capsule;
-use Weekii\Lib\Config;
 
 class IndexController extends Controller
 {
@@ -52,6 +49,17 @@ class IndexController extends Controller
             'msg' => '获取json成功',
             'code' => 2,
             'data' => $data->signature
+        ], 200);
+    }
+
+    public function container(Member $member)
+    {
+        $data = $member->find($this->request()->get('id'));
+
+        $this->writeJson([
+            'msg' => '获取json成功',
+            'code' => 2,
+            'data' => $data->id
         ], 200);
     }
 }
