@@ -50,10 +50,10 @@ return array(
     'database' => [
         'default' => [
             'driver'    => 'mysql',
-            'host'      => 's3.takecloud.cn',
-            'database'  => 'card',
-            'username'  => 'card',
-            'password'  => 'card@123',
+            'host'      => '',
+            'database'  => '',
+            'username'  => '',
+            'password'  => '',
             'charset'   => 'utf8mb4',
             'collation' => 'utf8mb4_general_ci',
             //'unix_socket' => '/var/lib/mysql/mysql.sock',
