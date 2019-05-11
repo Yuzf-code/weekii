@@ -120,8 +120,10 @@ class DB
     {
         $connectionList = DBContext::get(self::CONNECTION);
 
+        $connection = $connectionList[$this->getAdapter()];
+
         // 当前协程未获取该连接
-        if (!isset($connectionList[$this->getAdapter()])) {
+        if ($connection === null) {
             // 从池里拿一个连接
             $connection = $this->getPool()->pop($this->getConfig('getConnectionTimeout', 1));
 

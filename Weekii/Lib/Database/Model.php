@@ -93,7 +93,9 @@ class Model
     {
         $sql = $this->generateSelectSQL($column);
 
-        return $this->db->select($sql, $this->bindings);
+        return $this->run($sql, $this->bindings, function ($sql, $bindings) {
+            return $this->db->select($sql, $bindings);
+        });
     }
 
     /**
@@ -107,7 +109,9 @@ class Model
 
         $sql = $this->generateSelectSQL($column);
 
-        $this->data = $this->db->selectOne($sql, $this->bindings);
+        $this->data = $this->run($sql, $this->bindings, function ($sql, $bindings) {
+            return $this->db->selectOne($sql, $bindings);
+        });
 
         return $this;
     }
@@ -121,7 +125,9 @@ class Model
     {
         $sql = $this->generateInsertSQL($data);
 
-        return $this->db->insert($sql, $this->bindings);
+        return $this->run($sql, $this->bindings, function ($sql, $bindings) {
+            return $this->db->insert($sql, $bindings);
+        });
     }
 
     /**
@@ -132,7 +138,9 @@ class Model
     {
         $sql = $this->generateInsertSQL($this->data);
 
-        return $this->db->insert($sql, $this->bindings);
+        return $this->run($sql, $this->bindings, function ($sql, $bindings) {
+            return $this->db->insert($sql, $bindings);
+        });
     }
 
     /**
@@ -144,7 +152,9 @@ class Model
     {
         $sql = $this->generateUpdateSQL($data);
 
-        return $this->db->update($sql, $this->bindings);
+        return $this->run($sql, $this->bindings, function ($sql, $bindings) {
+            return $this->db->update($sql, $bindings);
+        });
     }
 
     /**
@@ -153,9 +163,12 @@ class Model
      */
     public function save()
     {
+        $this->where($this->primaryKey, $this->data[$this->primaryKey]);
         $sql = $this->generateUpdateSQL($this->data);
 
-        return $this->db->update($sql, $this->bindings);
+        return $this->run($sql, $this->bindings, function ($sql, $bindings) {
+            return $this->db->update($sql, $bindings);
+        });
     }
 
     // TODO delete function
@@ -195,6 +208,21 @@ class Model
     }
 
     /**
+     * 执行查询
+     * @param $sql
+     * @param $bindings
+     * @param \Closure $callback
+     * @return mixed
+     */
+    protected function run($sql, $bindings, \Closure $callback)
+    {
+        $result = $callback($sql, $bindings);
+        // 重置
+        $this->reset();
+        return $result;
+    }
+
+    /**
      * 生成update语句
      * @param array $data
      * @return string
@@ -227,9 +255,26 @@ class Model
         return $sql;
     }
 
+    protected function reset()
+    {
+        $this->resetConditions();
+        $this->resetBindings();
+        $this->resetLimit();
+    }
+
     protected function resetConditions()
     {
         $this->conditions = [];
+    }
+
+    protected function resetBindings()
+    {
+        $this->bindings = [];
+    }
+
+    protected function resetLimit()
+    {
+        $this->limit;
     }
 
     /**

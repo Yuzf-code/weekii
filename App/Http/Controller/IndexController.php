@@ -65,7 +65,9 @@ class IndexController extends Controller
 
     public function model(Member $memberModel)
     {
-        $data = $memberModel->where('signature', 'LIKE', '%一批%')->get();
+        $memberModel->find(340);
+        $memberModel->signature = '帅的一批的人';
+        $data = $memberModel->save();
 
         $this->writeJson([
             'msg' => '获取json成功',

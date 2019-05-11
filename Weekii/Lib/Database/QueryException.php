@@ -28,6 +28,6 @@ class QueryException extends \Exception
         $this->previous = $previous;
         $this->code = $previous->getCode();
 
-        $this->message = 'SQL ERROR: ' . $this->sql . "\n" .  'Params: ' . json_encode($bindings);
+        $this->message = 'SQL ERROR: ' . $previous->getMessage() . "\n" . $this->sql . "\n" .  'Params: ' . json_encode($bindings);
     }
 }

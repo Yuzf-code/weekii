@@ -202,3 +202,30 @@ class IndexController extends Controller
     }
 }
 ```
+
+### 模型
+`TestController.php`
+```php
+public function model(Member $memberModel)
+    {
+        // 获取主键为340的记录
+        $memberModel->find(340);
+        
+        // 通过当前数据对象(主键为340的记录)修改数据
+        $memberModel->signature = '帅的一批的人';
+        $data = $memberModel->save();
+        
+        // 通过键值对数组修改数据
+        $memberModel->where('type', 1)->update(['signature' => '帅的一批的人']);
+        
+        // 通过当前数据对象添加数据
+        $memberModel = new Member();
+        $memberModel->signature = '帅的一批的人';
+        $memberModel->add();
+        
+        
+        // 通过键值对数组添加数据
+        $memberModel->insert(['signature' => '帅的一批的人']);
+    }
+```
+> 其他用法请参照框架源码~
