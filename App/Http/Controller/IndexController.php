@@ -39,16 +39,16 @@ class IndexController extends Controller
 
         $memberModel = new Member();
 
-        $data = $memberModel->find(340);
+        $memberModel->find(340);
 
         //$data = $memberModel->where('signature', 'LIKE', '%一批%')->first();
 
-        var_dump($data->signature);
+        var_dump($memberModel->signature);
 
         $this->writeJson([
             'msg' => '获取json成功',
             'code' => 2,
-            'data' => $data->signature
+            'data' => $memberModel->signature
         ], 200);
     }
 
@@ -60,6 +60,17 @@ class IndexController extends Controller
             'msg' => '获取json成功',
             'code' => 2,
             'data' => $data->id
+        ], 200);
+    }
+
+    public function model(Member $memberModel)
+    {
+        $data = $memberModel->where('signature', 'LIKE', '%一批%')->get();
+
+        $this->writeJson([
+            'msg' => '获取json成功',
+            'code' => 2,
+            'data' => $data
         ], 200);
     }
 }

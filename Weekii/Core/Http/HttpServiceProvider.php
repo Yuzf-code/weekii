@@ -61,7 +61,7 @@ class HttpServiceProvider extends ServiceProvider
             $register = new EventRegister();
 
             GlobalEvent::serverCreate($server, $register);
-            EventHelper::registerDefaultOnRequest($register);
+            EventHelper::registerDefaultOnRequest($this->app, $register);
 
             $eventList = $register->all();
 

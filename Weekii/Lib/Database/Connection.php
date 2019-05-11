@@ -213,6 +213,12 @@ class Connection
     protected function runQueryCallback($query, $bindings, \Closure $callback)
     {
         try {
+            // 调试模式打印信息
+            if (isset($this->options['debug']) && $this->options['debug'] === true) {
+                $debugInfo = "\nSQL: " . $query . "\n";
+                $debugInfo .= 'parameters: ' . json_encode($bindings, JSON_UNESCAPED_UNICODE);
+                echo $debugInfo;
+            }
             $result = $callback($query, $bindings);
         } catch (\Exception $e) {
             throw new QueryException($query, $this->prepareBindings($bindings), $e);

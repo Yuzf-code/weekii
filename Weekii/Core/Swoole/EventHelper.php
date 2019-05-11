@@ -12,13 +12,13 @@ use Weekii\Lib\Config;
 
 class EventHelper
 {
-    public static function registerDefaultOnRequest(EventRegister $register, $controllerNameSpace = 'App\\Http\\Controller\\')
+    public static function registerDefaultOnRequest(App $app,EventRegister $register, $controllerNameSpace = 'App\\Http\\Controller\\')
     {
         /** 发现很多小伙伴不喜欢看源码，既然这样就让他们只有看了源码才能改路由调度方式，哈哈哈 **/
         // 默认路由调度
         //$dispatcher = new Dispatcher($controllerNameSpace);
-        $dispatcher = App::getInstance()->make(Dispatcher::class, [$controllerNameSpace]);
-        $register->set($register::onRequest, function (\swoole_http_request $swooleRequest, \swoole_http_response $swooleResponse) use ($dispatcher) {
+        $dispatcher = $app->make(Dispatcher::class, [$controllerNameSpace]);
+        $register->set($register::onRequest, function (\swoole_http_request $swooleRequest, \swoole_http_response $swooleResponse) use ($dispatcher, $app) {
             $request = new Request($swooleRequest);
             $response = new Response($swooleResponse);
             $view = new BladeInstance(PROJECT_ROOT . '/App/Http/View', Config::getInstance()->get('app')['tempDir'] . '/templates');
@@ -26,6 +26,8 @@ class EventHelper
                 GlobalEvent::onRequest($request, $response);
                 $dispatcher->dispatch($request, $response, $view);
                 GlobalEvent::afterAction($request, $response);
+                // 释放连接
+                $app->db->freeConnection();
             } catch (\Throwable $throwable) {
                 echo $throwable->getFile() . "\n";
                 echo $throwable->getLine() . "\n";

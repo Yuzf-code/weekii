@@ -8,4 +8,5 @@ RouteRule::get('/', function (\Weekii\Core\Http\Request $request, \Weekii\Core\H
 RouteRule::get('/hello/:name', \App\Http\Controller\IndexController::class . '@hello');
 RouteRule::get('/view/:name', \App\Http\Controller\IndexController::class . '@view');
 RouteRule::get('/db', \App\Http\Controller\IndexController::class . '@db');
+RouteRule::get('/model', \App\Http\Controller\IndexController::class . '@model');
 RouteRule::get('/container/:id', \App\Http\Controller\IndexController::class . '@container');

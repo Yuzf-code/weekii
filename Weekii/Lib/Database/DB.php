@@ -13,6 +13,8 @@ use Weekii\Lib\Pool\Pool;
  * Class DB
  * @method selectOne($query, $bindings = [])
  * @method select($query, $bindings = [])
+ * @method insert($query, $bindings = [])
+ * @method update($query, $bindings = [])
  * @package Weekii\Lib\Database
  */
 class DB
@@ -122,6 +124,10 @@ class DB
         if (!isset($connectionList[$this->getAdapter()])) {
             // 从池里拿一个连接
             $connection = $this->getPool()->pop($this->getConfig('getConnectionTimeout', 1));
+
+            if (empty($connection)) {
+                throw new ConnectionException("Getting connection timeout from pool.", 100);
+            }
 
             // 保存一下
             $connectionList[$this->getAdapter()] = $connection;

@@ -64,9 +64,9 @@ class Model
         $params = func_get_args();
 
         if ($paramsNum == 2) {
-            $this->addCondition('AND', $this->newWherePattern($params[0], '=', $params[1]) );
+            $this->addCondition('AND', $this->newPattern($params[0], '=', $params[1]) );
         } elseif ($paramsNum == 3) {
-            $this->addCondition('AND', $this->newWherePattern($params[0], $params[1], $params[2]));
+            $this->addCondition('AND', $this->newPattern($params[0], $params[1], $params[2]));
         }
 
         return $this;
@@ -112,9 +112,51 @@ class Model
         return $this;
     }
 
-    // TODO insert function
+    /**
+     * 插入数据
+     * @param array $data
+     * @return mixed
+     */
+    public function insert(array $data)
+    {
+        $sql = $this->generateInsertSQL($data);
 
-    // TODO update function
+        return $this->db->insert($sql, $this->bindings);
+    }
+
+    /**
+     * 使用当前对象插入一条数据
+     * @return mixed
+     */
+    public function add()
+    {
+        $sql = $this->generateInsertSQL($this->data);
+
+        return $this->db->insert($sql, $this->bindings);
+    }
+
+    /**
+     * 更新数据
+     * @param array $data
+     * @return mixed
+     */
+    public function update(array $data)
+    {
+        $sql = $this->generateUpdateSQL($data);
+
+        return $this->db->update($sql, $this->bindings);
+    }
+
+    /**
+     * 使用当前对象更新数据
+     * @return mixed
+     */
+    public function save()
+    {
+        $sql = $this->generateUpdateSQL($this->data);
+
+        return $this->db->update($sql, $this->bindings);
+    }
 
     // TODO delete function
 
@@ -153,6 +195,24 @@ class Model
     }
 
     /**
+     * 生成update语句
+     * @param array $data
+     * @return string
+     */
+    protected function generateUpdateSQL(array $data)
+    {
+        $sql = 'UPDATE ' . $this->getTableName() . ' SET ';
+        $setFields = [];
+        foreach ($data as $field => $value) {
+            $this->prepareBindings($value);
+            $setFields[] = $field . ' = ' . $value;
+        }
+
+        $sql .= implode(', ', $setFields) . ' WHERE ' . $this->generateConditionsSQL();
+        return $sql;
+    }
+
+    /**
      * 生成limit语句
      * @return string
      */
@@ -186,13 +246,13 @@ class Model
     }
 
     /**
-     * 生成where条件表达式
+     * 生成表达式
      * @param $column
      * @param $operator
      * @param $value
      * @return array
      */
-    protected function newWherePattern($column, $operator, $value)
+    protected function newPattern($column, $operator, $value)
     {
         return [
             $column,
@@ -211,7 +271,7 @@ class Model
         foreach ($this->conditions as $condition) {
             $this->prepareBindings($condition['pattern'][2]);
 
-            $sql .= $condition['type'] . ' ' . $condition[''] . implode(' ', $condition['pattern']);
+            $sql .= $condition['type'] . ' ' . implode(' ', $condition['pattern']);
         }
 
         return $sql;
@@ -229,17 +289,38 @@ class Model
     }
 
     /**
+     * 生成insert语句
+     * @param array $data
+     * @return string
+     */
+    protected function generateInsertSQL(array $data)
+    {
+        $fields = array_keys($data);
+        $values = array_values($data);
+        $this->prepareBindings($values);
+
+
+        $sql = 'INSERT INTO ' . $this->getTableName() . ' (' . implode(',', $fields) . ') VALUES ' . $values;
+        return $sql;
+    }
+
+    /**
      * 预处理参数绑定相关
      * @param $pattern
      */
     protected function prepareBindings(&$param)
     {
         if (is_array($param)) {
-            $this->bindings[] =  '(' . implode(',', $param) . ')';
+            foreach ($param as $index => $item) {
+                $this->bindings[] = $item;
+                $param[$index] = '?';
+            }
+
+            $param = '(' . implode(',', $param) . ')';
         } else {
             $this->bindings[] = $param;
+            $param = '?';
         }
-        $param = '?';
     }
 
     /**
@@ -249,6 +330,11 @@ class Model
     public function getTableName()
     {
         return $this->db->tableName($this->table);
+    }
+
+    public function toJson()
+    {
+        return json_encode($this->data);
     }
 
     public function __get($name)
@@ -273,5 +359,10 @@ class Model
     public function __unset($name)
     {
         unset($this->data[$name]);
+    }
+
+    public function __toString()
+    {
+        return $this->toJson();
     }
 }
