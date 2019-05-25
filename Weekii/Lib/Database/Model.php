@@ -37,11 +37,29 @@ class Model
      */
     protected $primaryKey = 'id';
 
+    /**
+     * where条件
+     * @var array
+     */
     protected $conditions = [];
 
+    /**
+     * 参数绑定
+     * @var array
+     */
     protected $bindings = [];
 
+    /**
+     * limit参数
+     * @var array
+     */
     protected $limit = [];
+
+    /**
+     * orderBy参数
+     * @var array
+     */
+    protected $orderBy = [];
 
     /**
      * 数据集
@@ -80,7 +98,6 @@ class Model
      */
     public function find($id, $column = ['*'])
     {
-        $this->resetConditions();
         return $this->where($this->primaryKey, $id)->first($column);
     }
 
@@ -91,9 +108,7 @@ class Model
      */
     public function get($column = ['*'])
     {
-        $sql = $this->generateSelectSQL($column);
-
-        return $this->run($sql, $this->bindings, function ($sql, $bindings) {
+        return $this->run($this->generateSelectSQL($column), $this->bindings, function ($sql, $bindings) {
             return $this->db->select($sql, $bindings);
         });
     }
@@ -107,9 +122,7 @@ class Model
     {
         $this->take(1);
 
-        $sql = $this->generateSelectSQL($column);
-
-        $this->data = $this->run($sql, $this->bindings, function ($sql, $bindings) {
+        $this->data = $this->run($this->generateSelectSQL($column), $this->bindings, function ($sql, $bindings) {
             return $this->db->selectOne($sql, $bindings);
         });
 
@@ -123,9 +136,7 @@ class Model
      */
     public function insert(array $data)
     {
-        $sql = $this->generateInsertSQL($data);
-
-        return $this->run($sql, $this->bindings, function ($sql, $bindings) {
+        return $this->run($this->generateInsertSQL($data), $this->bindings, function ($sql, $bindings) {
             return $this->db->insert($sql, $bindings);
         });
     }
@@ -136,9 +147,7 @@ class Model
      */
     public function add()
     {
-        $sql = $this->generateInsertSQL($this->data);
-
-        return $this->run($sql, $this->bindings, function ($sql, $bindings) {
+        return $this->run($this->generateInsertSQL($this->data), $this->bindings, function ($sql, $bindings) {
             return $this->db->insert($sql, $bindings);
         });
     }
@@ -150,9 +159,7 @@ class Model
      */
     public function update(array $data)
     {
-        $sql = $this->generateUpdateSQL($data);
-
-        return $this->run($sql, $this->bindings, function ($sql, $bindings) {
+        return $this->run($this->generateUpdateSQL($data), $this->bindings, function ($sql, $bindings) {
             return $this->db->update($sql, $bindings);
         });
     }
@@ -164,16 +171,42 @@ class Model
     public function save()
     {
         $this->where($this->primaryKey, $this->data[$this->primaryKey]);
-        $sql = $this->generateUpdateSQL($this->data);
 
-        return $this->run($sql, $this->bindings, function ($sql, $bindings) {
+        return $this->run($this->generateUpdateSQL($this->data), $this->bindings, function ($sql, $bindings) {
             return $this->db->update($sql, $bindings);
         });
     }
 
-    // TODO delete function
+    /**
+     * 删除数据
+     * @param null $id
+     * @return mixed
+     * @throws \Exception
+     */
+    public function delete($id = null)
+    {
+        if (!is_null($id)) {
+            $this->where($this->primaryKey, $id);
+        }
 
-    // TODO orderBy function
+        if (empty($this->conditions)) {
+            throw new \Exception('Method delete() must has conditions');
+        }
+
+        return $this->run($this->generateDeleteSQL(), $this->bindings, function ($sql, $bindings) {
+            return $this->db->delete($sql, $bindings);
+        });
+    }
+
+    /**
+     * 排序
+     * @param $field
+     * @param $type
+     */
+    public function orderBy($field, $type)
+    {
+        $this->orderBy[] = compact($field, $type);
+    }
 
     // TODO groupBy function
 
@@ -223,6 +256,16 @@ class Model
     }
 
     /**
+     * 生成delete语句
+     * @return string
+     */
+    protected function generateDeleteSQL()
+    {
+        $sql = 'DELETE FROM ' . $this->getTableName() . ' WHERE ' . $this->generateConditionsSQL();
+        return $sql;
+    }
+
+    /**
      * 生成update语句
      * @param array $data
      * @return string
@@ -253,6 +296,30 @@ class Model
             $sql = ' LIMIT ' . $this->limit[0] . ', ' . $this->limit[1];
         }
         return $sql;
+    }
+
+    /**
+     * 生成orderBy语句
+     * @return mixed|string
+     */
+    protected function generateOrderBySQL()
+    {
+        if (empty($this->orderBy)) {
+            return '';
+        }
+
+        $initial = ' ORDER BY ';
+        return array_reduce($this->orderBy, function ($carry, $item) use ($initial) {
+            if ($carry != $initial) {
+                $carry .= ', ';
+            }
+
+            $this->prepareBindings($item['field']);
+            $this->prepareBindings($item['type']);
+
+            return $carry . $item['field'] . ' ' . $item['type'];
+
+        }, $initial);
     }
 
     protected function reset()
@@ -329,7 +396,10 @@ class Model
      */
     protected function generateSelectSQL($column = ['*'])
     {
-        $sql = 'SELECT ' . implode(',', $column) . ' FROM ' . $this->getTableName() . ' WHERE ' . $this->generateConditionsSQL() . $this->generateLimitSQL();
+        $sql = 'SELECT ' . implode(',', $column) . ' FROM ' . $this->getTableName() . ' WHERE '
+            . $this->generateConditionsSQL()
+            . $this->generateOrderBySQL()
+            . $this->generateLimitSQL();
         return $sql;
     }
 

@@ -15,6 +15,7 @@ use Weekii\Lib\Pool\Pool;
  * @method select($query, $bindings = [])
  * @method insert($query, $bindings = [])
  * @method update($query, $bindings = [])
+ * @method delete($query, $bindings = [])
  * @package Weekii\Lib\Database
  */
 class DB
