@@ -65,9 +65,18 @@ class IndexController extends Controller
 
     public function model(Member $memberModel)
     {
-        $memberModel->find(340);
+        /*$memberModel->find(340);
         $memberModel->signature = '帅的一批的人';
-        $data = $memberModel->save();
+        $data = $memberModel->save();*/
+
+        $data = $memberModel->where('id', '>', 340)
+            ->count('id');
+
+        $memberModel->where('id', '>', 340)
+            ->orderBy('id', 'DESC')
+            ->orderBy('type', 'asc')
+            ->groupBy('type')
+            ->get(['COUNT(id) AS count', 'type']);
 
         $this->writeJson([
             'msg' => '获取json成功',

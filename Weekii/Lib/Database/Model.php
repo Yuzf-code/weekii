@@ -7,18 +7,6 @@ use Weekii\Core\App;
 
 class Model
 {
-    const CREATE_TIME = 'create_time';
-
-    const UPDATE_TIME = 'update_time;';
-
-    const SQL_TYPE_SELECT = 1;
-
-    const SQL_TYPE_INSERT = 2;
-
-    const SQL_TYPE_UPDATE = 3;
-
-    const SQL_TYPE_DELETE = 4;
-
     /**
      * db实例
      * @var DB
@@ -60,6 +48,12 @@ class Model
      * @var array
      */
     protected $orderBy = [];
+
+    /**
+     * groupBy参数
+     * @var array
+     */
+    protected $groupBy = [];
 
     /**
      * 数据集
@@ -205,12 +199,40 @@ class Model
      */
     public function orderBy($field, $type)
     {
-        $this->orderBy[] = compact($field, $type);
+        $this->orderBy[] = compact('field', 'type');
+        return $this;
     }
 
-    // TODO groupBy function
+    /**
+     * 分组
+     * @param mixed ...$fields
+     */
+    public function groupBy(...$fields)
+    {
+        $this->groupBy = $fields;
+        return $this;
+    }
 
-    // TODO count function
+    /**
+     * count
+     * @param $field
+     * @param string $alias
+     * @return int
+     */
+    public function count($field, $alias = '')
+    {
+        $field = 'COUNT(' . $field . ')';
+
+        if (!empty($alias)) {
+            $field .= ' AS ' . $alias;
+        } else {
+            $alias = $field;
+        }
+
+        $this->first(array($field));
+
+        return $this->$alias;
+    }
 
     // TODO with function
 
@@ -250,6 +272,7 @@ class Model
     protected function run($sql, $bindings, \Closure $callback)
     {
         $result = $callback($sql, $bindings);
+
         // 重置
         $this->reset();
         return $result;
@@ -294,6 +317,23 @@ class Model
             $this->prepareBindings($this->limit[0]);
             $this->prepareBindings($this->limit[1]);
             $sql = ' LIMIT ' . $this->limit[0] . ', ' . $this->limit[1];
+        }
+        return $sql;
+    }
+
+    /**
+     * 生成groupBy语句
+     * @return string
+     */
+    protected function generateGroupBySQL()
+    {
+        $sql = '';
+        if (!empty($this->groupBy)) {
+            array_walk($this->groupBy, function (&$field, $index) {
+                $this->prepareBindings($field);
+            });
+
+            $sql = ' GROUP BY ' . implode(', ', $this->groupBy);
         }
         return $sql;
     }
@@ -383,7 +423,7 @@ class Model
         foreach ($this->conditions as $condition) {
             $this->prepareBindings($condition['pattern'][2]);
 
-            $sql .= $condition['type'] . ' ' . implode(' ', $condition['pattern']);
+            $sql .= ' ' . $condition['type'] . ' ' . implode(' ', $condition['pattern']);
         }
 
         return $sql;
@@ -398,6 +438,7 @@ class Model
     {
         $sql = 'SELECT ' . implode(',', $column) . ' FROM ' . $this->getTableName() . ' WHERE '
             . $this->generateConditionsSQL()
+            . $this->generateGroupBySQL()
             . $this->generateOrderBySQL()
             . $this->generateLimitSQL();
         return $sql;
