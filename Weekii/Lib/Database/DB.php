@@ -94,8 +94,9 @@ class DB
     }
 
     /**
-     * @param $adapter
-     * @param Pool $pool
+     * 获取连接池
+     * @return mixed
+     * @throws \Exception
      */
     protected function getPool()
     {
@@ -103,7 +104,7 @@ class DB
             return $this->pool[$this->getAdapter()];
         }
 
-        $size = $this->getConfig('size', 50);
+        $size = $this->getConfig('poolSize', 50);
         $connectionFactory = $this->app->make(ConnectionFactory::class, [$this->getConfig()]);
 
         $this->pool[$this->getAdapter()] = $this->app->make(Pool::class, [$size, $connectionFactory]);
@@ -113,8 +114,8 @@ class DB
 
     /**
      * 获取连接
-     * @param string $adapter
      * @return Connection
+     * @throws ConnectionException
      * @throws \Weekii\Core\Swoole\Coroutine\CoroutineExcepiton
      */
     protected function getConnection():Connection

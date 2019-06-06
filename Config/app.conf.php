@@ -22,7 +22,7 @@ return array(
     'database' => [
         'default' => [
             'driver'    => 'mysql',
-            'host'      => '',
+            'host'      => '127.0.0.1',
             'database'  => '',
             'username'  => '',
             'password'  => '',
@@ -35,6 +35,15 @@ return array(
             'poolSize' => 50,
             'debug' => true                 // 调试模式，打印sql
         ]
+    ],
+
+    'redis' => [
+        'host' => '127.0.0.1',
+        'port' => 6379,
+        'password' => '',
+        'index' => 1,
+        'poolSize' => 50,
+        'getConnectionTimeout' => 1,    // 获取连接最多等待秒数
     ],
 
     // 是否开启路由缓存
@@ -53,6 +62,7 @@ return array(
         /** Framework Service Providers **/
         \Weekii\Core\Http\HttpServiceProvider::class,
         \Weekii\Lib\Database\DatabaseServiceProvider::class,
-        \Weekii\Lib\Pool\PoolServiceProvider::class
+        \Weekii\Lib\Pool\PoolServiceProvider::class,
+        \Weekii\Lib\Redis\RedisServiceProvider::class
     ],
 );
