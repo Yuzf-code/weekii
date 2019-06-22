@@ -60,7 +60,8 @@ abstract class Controller
 
     protected function actionNotFound($actionName)
     {
-        $this->response()->withStatus(404);
+        $this->response->withStatus(404);
+        $this->response->write("Action: " . $actionName . "Not Found.");
     }
 
     protected function assign($tplVar, $value = null)

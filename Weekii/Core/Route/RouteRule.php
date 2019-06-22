@@ -6,7 +6,7 @@
  * Time: 19:37
  */
 
-namespace Weekii\Core\Http;
+namespace Weekii\Core\Route;
 
 
 use Weekii\Core\App;
@@ -31,7 +31,7 @@ class RouteRule
 
             self::cacheHandle();
 
-            $directory =PROJECT_ROOT . '/App/Http/Routes/';
+            $directory =PROJECT_ROOT . '/App/Routes/';
             $file = scandir($directory);
             foreach ($file as $item) {
                 // 去除两个特殊目录
@@ -175,5 +175,15 @@ class RouteRule
     public static function any($pattern, $target)
     {
         self::rule($pattern, $target, '*');
+    }
+
+    /**
+     * 消息路由（websocket tcp 等长连接协议使用）
+     * @param $pattern
+     * @param $target
+     */
+    public static function message($pattern, $target)
+    {
+        self::rule($pattern, $target, 'MESSAGE');
     }
 }

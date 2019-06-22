@@ -5,7 +5,7 @@ return array(
     // 服务配置
     'swooleServer' => [
         // 服务类型
-        'type' => \Weekii\Core\Swoole\ServerManager::TYPE_HTTP,
+        'type' => \Weekii\Core\Swoole\ServerManager::TYPE_WEB_SOCKET,
         'port' => 9501,
         'host' => '0.0.0.0',
         'mode' => SWOOLE_PROCESS,
@@ -60,7 +60,10 @@ return array(
 
     'providers' => [
         /** Framework Service Providers **/
+        \Weekii\Core\Swoole\ServerManagerServiceProvider::class,
         \Weekii\Core\Http\HttpServiceProvider::class,
+        \Weekii\Core\WebSocket\WebSocketServiceProvider::class,
+        \Weekii\Core\Route\RouteServiceProvider::class,
         \Weekii\Lib\Database\DatabaseServiceProvider::class,
         \Weekii\Lib\Pool\PoolServiceProvider::class,
         \Weekii\Lib\Redis\RedisServiceProvider::class

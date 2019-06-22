@@ -152,6 +152,8 @@ class DB
         foreach ($connectionList as $adapter => $connection) {
             $this->pool[$adapter]->push($connection);
         }
+
+        DBContext::delete();
     }
 
     /**

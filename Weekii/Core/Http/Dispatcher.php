@@ -3,6 +3,7 @@ namespace Weekii\Core\Http;
 
 use duncan3dc\Laravel\BladeInstance;
 use Weekii\Core\App;
+use Weekii\Core\Route\RouteRule;
 
 class Dispatcher
 {
@@ -18,11 +19,15 @@ class Dispatcher
     }
 
     /**
-     * 调度
+     * 路由调度
+     * @param Request $request
+     * @param Response $response
+     * @param BladeInstance $view
+     * @throws \Exception
      */
     public function dispatch(Request $request, Response $response, BladeInstance $view)
     {
-        $router = new Router($request->getMethod(), $request->getPathInfo());
+        $router = $this->app->make('router', [$request->getMethod(), $request->getPathInfo()]);
 
         $routeInfo = $router->dispatch();
         switch ($routeInfo['status']) {
@@ -55,6 +60,13 @@ class Dispatcher
         $this->runAction($request, $response, $view);
     }
 
+    /**
+     * 执行控制器方法
+     * @param Request $request
+     * @param Response $response
+     * @param BladeInstance $view
+     * @throws \ReflectionException
+     */
     public function runAction(Request $request, Response $response, BladeInstance $view)
     {
         $controllerNamespace = $request->getControllerNamespace();

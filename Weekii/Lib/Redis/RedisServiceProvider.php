@@ -20,7 +20,7 @@ class RedisServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton('redis', function () {
-            return new RedisServiceProvider($this->app);
+            return new RedisManager($this->app);
         });
     }
 

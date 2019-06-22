@@ -74,6 +74,21 @@ class RedisManager
     }
 
     /**
+     * 回收连接
+     * @throws \Weekii\Core\Swoole\Coroutine\CoroutineExcepiton
+     */
+    public function freeConnection()
+    {
+        $connection = RedisContext::get(self::CONNECTION);
+
+        if (!empty($connection)) {
+            $this->pool->push($connection);
+
+            RedisContext::delete();
+        }
+    }
+
+    /**
      * 动态调用
      * @param $method
      * @param $arguments

@@ -5,14 +5,21 @@ use Weekii\Core\Swoole\ServerManager;
 use Weekii\GlobalEvent;
 use Weekii\Lib\Config;
 use Weekii\Lib\Database\DB;
+use Weekii\Lib\Redis\RedisManager;
 
 /**
  * Class App
  * @property DB $db
+ * @property RedisManager $redis
+ * @property ServerManager $serverManager
  * @package Weekii\Core
  */
 class App extends Container
 {
+    /**
+     * 应用启动
+     * @throws \Exception
+     */
     public function run ()
     {
         define('WEEKII_ROOT', realpath(getcwd()));
@@ -20,7 +27,7 @@ class App extends Container
         define('CONFIG_PATH', PROJECT_ROOT . '/Config');
 
         $this->init();
-        ServerManager::getInstance()->start();
+        $this->serverManager->start();
     }
 
     /**

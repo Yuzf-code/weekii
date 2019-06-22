@@ -1,6 +1,6 @@
 <?php
 
-namespace Weekii\Core\Http;
+namespace Weekii\Core\Route;
 
 class Router
 {
