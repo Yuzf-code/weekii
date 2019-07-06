@@ -78,17 +78,24 @@ class App extends Container
     private function registerServiceProviders()
     {
         $providers = Config::getInstance()->get('app')['providers'];
+
+        $boots = [];
+
         foreach ($providers as $providerClass) {
             if (class_exists($providerClass)) {
                 $provider = new $providerClass($this);
                 if ($provider instanceof ServiceProvider) {
                     $provider->register();
+                    $boots[] = $provider;
                 } else {
-                    throw new \Exception('Class' . $providerClass . 'must be extends ServiceProvider');
+                    throw new \Exception('Class ' . $providerClass . 'must be extends ServiceProvider');
                 }
             }
         }
 
         // TODO providers boot
+        foreach ($boots as $boot) {
+            $boot->boot();
+        }
     }
 }
