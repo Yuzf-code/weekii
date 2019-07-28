@@ -26,6 +26,12 @@ class Model
     protected $primaryKey = 'id';
 
     /**
+     * 使用model对象返回
+     * @var bool
+     */
+    protected $resultModel = true;
+
+    /**
      * where条件
      * @var array
      */
@@ -103,14 +109,22 @@ class Model
     public function get($column = ['*'])
     {
         return $this->run($this->generateSelectSQL($column), $this->bindings, function ($sql, $bindings) {
-            return $this->db->select($sql, $bindings);
+            $result =  $this->db->select($sql, $bindings);
+
+            // 使用model返回
+            if ($this->resultModel) {
+                // 结果集转换为为model对象
+                $this->resultToModel($result);
+            }
+
+            return $result;
         });
     }
 
     /**
      * 获取一条
      * @param array $column
-     * @return $this
+     * @return $this | array
      */
     public function first($column = ['*'])
     {
@@ -120,7 +134,11 @@ class Model
             return $this->db->selectOne($sql, $bindings);
         });
 
-        return $this;
+        if ($this->resultModel) {
+            return $this;
+        } else {
+            return $this->data;
+        }
     }
 
     /**
@@ -234,7 +252,15 @@ class Model
         return $this->$alias;
     }
 
-    // TODO with function
+    public function hasOne($related, $foreignKey ,$localKey)
+    {
+        // TODO return a hasOne instance
+    }
+
+    public function hasMany($related, $foreignKey, $localKey)
+    {
+        // TODO return a hasMany instance
+    }
 
     // TODO join function
 
@@ -260,6 +286,16 @@ class Model
         ];
 
         return $this;
+    }
+
+    public function resultToModel(&$result)
+    {
+        $app = App::getInstance();
+        foreach ($result as $index => $item) {
+            $modelInstance = $app->make(static::class);
+            $modelInstance->setData($item);
+            $result[$index] = $modelInstance;
+        }
     }
 
     /**
@@ -477,6 +513,11 @@ class Model
             $this->bindings[] = $param;
             $param = '?';
         }
+    }
+
+    public function setData(array $data)
+    {
+        $this->data = $data;
     }
 
     /**
