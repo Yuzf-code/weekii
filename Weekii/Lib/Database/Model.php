@@ -4,6 +4,9 @@ namespace Weekii\Lib\Database;
 
 
 use Weekii\Core\App;
+use Weekii\Lib\Database\Relation\HasMany;
+use Weekii\Lib\Database\Relation\HasOne;
+use Weekii\Lib\Database\Relation\Relation;
 
 class Model
 {
@@ -62,6 +65,12 @@ class Model
     protected $groupBy = [];
 
     /**
+     * 模型关联
+     * @var array
+     */
+    protected $relationships = [];
+
+    /**
      * 数据集
      * @var array
      */
@@ -117,6 +126,8 @@ class Model
                 $this->resultToModel($result);
             }
 
+            // TODO handle relationship
+
             return $result;
         });
     }
@@ -133,6 +144,8 @@ class Model
         $this->data = $this->run($this->generateSelectSQL($column), $this->bindings, function ($sql, $bindings) {
             return $this->db->selectOne($sql, $bindings);
         });
+
+        // TODO handle relationship
 
         if ($this->resultModel) {
             return $this;
@@ -252,17 +265,66 @@ class Model
         return $this->$alias;
     }
 
-    public function hasOne($related, $foreignKey ,$localKey)
+    /**
+     * 一对一关联
+     * @param $related
+     * @param $foreignKey
+     * @param $localKey
+     * @return HasOne
+     */
+    protected function hasOne($related, $foreignKey ,$localKey)
     {
-        // TODO return a hasOne instance
+        return new HasOne($related, $this, $foreignKey, $localKey);
     }
 
-    public function hasMany($related, $foreignKey, $localKey)
+    /**
+     * 一对多关联
+     * @param $related
+     * @param $foreignKey
+     * @param $localKey
+     * @return HasMany
+     */
+    protected function hasMany($related, $foreignKey, $localKey)
     {
-        // TODO return a hasMany instance
+        return new HasMany($related, $this, $foreignKey, $localKey);
     }
 
-    // TODO join function
+    /**
+     * 注册关联模型方法
+     * @param $relationship
+     * @param array $column
+     * @param \Closure|null $helper
+     * @return $this
+     */
+    public function with($relationship, array $column = ['*'], \Closure $helper = null)
+    {
+        if (!method_exists($this, $relationship)) {
+            throw new \Exception("relationship method not found.");
+        }
+
+        $relation = $this->$relationship();
+
+        if (!$relation instanceof Relation) {
+            throw new \Exception("relationship method must return an Relation instance.");
+        }
+
+        $relation->addConditions($helper);
+
+        $this->addRelationship($relationship, $relation, $column);
+
+        return $this;
+    }
+
+    /**
+     * 添加关联关系
+     * @param $relationship
+     * @param Relation $relation
+     * @param array $column
+     */
+    public function addRelationship($relationship, Relation $relation, array $column = ['*'])
+    {
+        $this->relationships[$relationship] = compact('relation', 'column');
+    }
 
     /**
      * 获取指定行数数据
@@ -561,5 +623,45 @@ class Model
     public function __toString()
     {
         return $this->toJson();
+    }
+
+    /**
+     * key是否存在
+     * @param mixed $key
+     * @return bool
+     */
+    public function offsetExists($name)
+    {
+        return isset($this->data[$name]);
+    }
+
+    /**
+     * 根据key获取对象
+     * @param mixed $name
+     * @return mixed
+     * @throws \Exception
+     */
+    public function offsetGet($name)
+    {
+        return $this->data[$name];
+    }
+
+    /**
+     * 快捷绑定
+     * @param mixed $name
+     * @param mixed $value
+     */
+    public function offsetSet($name, $value)
+    {
+        $this->data[$name] = $value;
+    }
+
+    /**
+     * unset
+     * @param mixed $name
+     */
+    public function offsetUnset($name)
+    {
+        unset($this->data[$name]);
     }
 }
