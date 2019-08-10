@@ -120,13 +120,16 @@ class Model
         return $this->run($this->generateSelectSQL($column), $this->bindings, function ($sql, $bindings) {
             $result =  $this->db->select($sql, $bindings);
 
-            // 使用model返回
-            if ($this->resultModel) {
-                // 结果集转换为为model对象
-                $this->resultToModel($result);
-            }
+            // 处理结果集
+            foreach ($result as $index => $item) {
+                // 使用model返回
+                if ($this->resultModel) {
+                    // 结果集转换为为model对象
+                    $result[$index] = $this->resultToModel($item);
+                }
 
-            // TODO handle relationship
+                $this->loadRelationship($result[$index]);
+            }
 
             return $result;
         });
@@ -145,7 +148,8 @@ class Model
             return $this->db->selectOne($sql, $bindings);
         });
 
-        // TODO handle relationship
+        // handle relationship
+        $this->loadRelationship($this->data);
 
         if ($this->resultModel) {
             return $this;
@@ -262,7 +266,7 @@ class Model
 
         $this->first(array($field));
 
-        return $this->$alias;
+        return $this[$alias];
     }
 
     /**
@@ -327,6 +331,17 @@ class Model
     }
 
     /**
+     * 挂载关联模型数据
+     * @param array | Model $row
+     */
+    protected function loadRelationship(&$row)
+    {
+        foreach ($this->relationships as $key => $item) {
+            $row[$key] = $item['relation']->getResult($item['column']);
+        }
+    }
+
+    /**
      * 获取指定行数数据
      * @param $row
      */
@@ -350,14 +365,17 @@ class Model
         return $this;
     }
 
-    public function resultToModel(&$result)
+    /**
+     * 结果转换为Model实例
+     * @param $result
+     * @return mixed
+     * @throws \Exception
+     */
+    public function resultToModel($result)
     {
-        $app = App::getInstance();
-        foreach ($result as $index => $item) {
-            $modelInstance = $app->make(static::class);
-            $modelInstance->setData($item);
-            $result[$index] = $modelInstance;
-        }
+        $modelInstance = App::getInstance()->make(static::class);
+        $modelInstance->setData($result);
+        return $modelInstance;
     }
 
     /**
