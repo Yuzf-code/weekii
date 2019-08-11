@@ -9,7 +9,11 @@
 namespace App\Model;
 
 
-class Card
-{
+use Weekii\Lib\Database\Model;
 
+class Card extends Model
+{
+    protected $table = 'card';
+
+    protected $primaryKey = 'id';
 }

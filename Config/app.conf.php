@@ -22,10 +22,10 @@ return array(
     'database' => [
         'default' => [
             'driver'    => 'mysql',
-            'host'      => '127.0.0.1',
-            'database'  => '',
-            'username'  => '',
-            'password'  => '',
+            'host'      => '192.168.99.100',
+            'database'  => 'test',
+            'username'  => 'root',
+            'password'  => '123456a.',
             'charset'   => 'utf8mb4',
             'collation' => 'utf8mb4_general_ci',
             //'unix_socket' => '/var/lib/mysql/mysql.sock',
@@ -33,14 +33,15 @@ return array(
             'port'      => 3306,
             'getConnectionTimeout' => 1,    // 获取连接最多等待秒数
             'poolSize' => 50,
-            'debug' => true                 // 调试模式，打印sql
+            'debug' => true,                 // 调试模式，打印sql
+            'resultType' => \Weekii\Lib\Database\Model::RESULT_TYPE_ARRAY
         ]
     ],
 
     'redis' => [
         'host' => '127.0.0.1',
         'port' => 6379,
-        'password' => '',
+        'password' => '123456a.',
         'index' => 1,
         'poolSize' => 50,
         'getConnectionTimeout' => 1,    // 获取连接最多等待秒数

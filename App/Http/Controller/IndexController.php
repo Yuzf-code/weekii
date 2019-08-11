@@ -1,8 +1,10 @@
 <?php
 namespace App\Http\Controller;
 
+use App\Model\Card;
 use App\Model\Member;
 use Weekii\Core\Http\Controller;
+use Weekii\Lib\Database\Model;
 
 class IndexController extends Controller
 {
@@ -39,16 +41,16 @@ class IndexController extends Controller
 
         $memberModel = new Member();
 
-        $memberModel->find(340);
+        $memberModel->find(1);
 
         //$data = $memberModel->where('signature', 'LIKE', '%一批%')->first();
 
-        var_dump($memberModel->signature);
+        var_dump($memberModel->name);
 
         $this->writeJson([
             'msg' => '获取json成功',
             'code' => 2,
-            'data' => $memberModel->signature
+            'data' => $memberModel->getData()
         ], 200);
     }
 
@@ -59,29 +61,27 @@ class IndexController extends Controller
         $this->writeJson([
             'msg' => '获取json成功',
             'code' => 2,
-            'data' => $data->id
+            'data' => $data['name']
         ], 200);
     }
 
     public function model(Member $memberModel)
     {
-        /*$memberModel->find(340);
-        $memberModel->signature = '帅的一批的人';
-        $data = $memberModel->save();*/
+        /*$memberModel->find(1);
+        $memberModel->name = '帅的一批的人';
+        $memberModel->save();*/
 
-        $data = $memberModel->where('id', '>', 340)
-            ->count('id');
+        $data = $memberModel->count('id');
 
-        $memberModel->where('id', '>', 340)
-            ->orderBy('id', 'DESC')
-            ->orderBy('type', 'asc')
-            ->groupBy('type')
-            ->get(['COUNT(id) AS count', 'type']);
+        $data2 = $memberModel->with('card', ['*'], function ($row, Card $card) {
+            $card->where('title', $row['name']);
+        })->get();
 
         $this->writeJson([
             'msg' => '获取json成功',
             'code' => 2,
-            'data' => $data
+            'data' => $data,
+            'data2' => $data2
         ], 200);
     }
 }

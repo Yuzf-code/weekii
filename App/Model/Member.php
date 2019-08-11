@@ -13,7 +13,12 @@ use Weekii\Lib\Database\Model;
 
 class Member extends Model
 {
-    protected $table = 'member';
+    protected $table = 'user';
 
     protected $primaryKey = 'id';
+
+    public function card()
+    {
+        return $this->hasMany(Card::class, 'user_id', 'id');
+    }
 }

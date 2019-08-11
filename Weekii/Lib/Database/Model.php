@@ -8,13 +8,25 @@ use Weekii\Lib\Database\Relation\HasMany;
 use Weekii\Lib\Database\Relation\HasOne;
 use Weekii\Lib\Database\Relation\Relation;
 
-class Model
+class Model implements \ArrayAccess
 {
+    /**
+     * 查询结果集返回类型
+     */
+    const RESULT_TYPE_ARRAY = 1;
+    const RESULT_TYPE_MODEL = 2;
+
     /**
      * db实例
      * @var DB
      */
     protected $db;
+
+    /**
+     * 指定连接适配器
+     * @var
+     */
+    protected $adapter;
 
     /**
      * 表名
@@ -32,7 +44,7 @@ class Model
      * 使用model对象返回
      * @var bool
      */
-    protected $resultModel = true;
+    protected $resultType = self::RESULT_TYPE_ARRAY;
 
     /**
      * where条件
@@ -79,6 +91,15 @@ class Model
     public function __construct()
     {
         $this->db = App::getInstance()->db;
+
+        if (!empty($this->adapter)) {
+            $this->db->setAdapter($this->adapter);
+        }
+
+        $resultType = $this->getConfig('resultType');
+        if (!empty($resultType)) {
+            $this->resultType = $resultType;
+        }
     }
 
     /**
@@ -123,7 +144,7 @@ class Model
             // 处理结果集
             foreach ($result as $index => $item) {
                 // 使用model返回
-                if ($this->resultModel) {
+                if ($this->resultType == self::RESULT_TYPE_MODEL) {
                     // 结果集转换为为model对象
                     $result[$index] = $this->resultToModel($item);
                 }
@@ -151,7 +172,7 @@ class Model
         // handle relationship
         $this->loadRelationship($this->data);
 
-        if ($this->resultModel) {
+        if ($this->resultType == self::RESULT_TYPE_MODEL) {
             return $this;
         } else {
             return $this->data;
@@ -264,9 +285,11 @@ class Model
             $alias = $field;
         }
 
-        $this->first(array($field));
+        $result = $this->run($this->generateSelectSQL([$field]), $this->bindings, function ($sql, $bindings) {
+            return $this->db->selectOne($sql, $bindings);
+        });
 
-        return $this[$alias];
+        return $result[$alias];
     }
 
     /**
@@ -278,7 +301,7 @@ class Model
      */
     protected function hasOne($related, $foreignKey ,$localKey)
     {
-        return new HasOne($related, $this, $foreignKey, $localKey);
+        return new HasOne($related, $foreignKey, $localKey);
     }
 
     /**
@@ -290,7 +313,7 @@ class Model
      */
     protected function hasMany($related, $foreignKey, $localKey)
     {
-        return new HasMany($related, $this, $foreignKey, $localKey);
+        return new HasMany($related, $foreignKey, $localKey);
     }
 
     /**
@@ -312,9 +335,7 @@ class Model
             throw new \Exception("relationship method must return an Relation instance.");
         }
 
-        $relation->addConditions($helper);
-
-        $this->addRelationship($relationship, $relation, $column);
+        $this->addRelationship($relationship, $relation, $column, $helper);
 
         return $this;
     }
@@ -325,9 +346,9 @@ class Model
      * @param Relation $relation
      * @param array $column
      */
-    public function addRelationship($relationship, Relation $relation, array $column = ['*'])
+    public function addRelationship($relationship, Relation $relation, array $column = ['*'], \Closure $helper = null)
     {
-        $this->relationships[$relationship] = compact('relation', 'column');
+        $this->relationships[$relationship] = compact('relation', 'column', 'helper');
     }
 
     /**
@@ -337,7 +358,7 @@ class Model
     protected function loadRelationship(&$row)
     {
         foreach ($this->relationships as $key => $item) {
-            $row[$key] = $item['relation']->getResult($item['column']);
+            $row[$key] = $item['relation']->getResult($row, $item['column'], $item['helper']);
         }
     }
 
@@ -400,7 +421,7 @@ class Model
      */
     protected function generateDeleteSQL()
     {
-        $sql = 'DELETE FROM ' . $this->getTableName() . ' WHERE ' . $this->generateConditionsSQL();
+        $sql = 'DELETE FROM ' . $this->getTableName() . $this->generateConditionsSQL();
         return $sql;
     }
 
@@ -418,7 +439,7 @@ class Model
             $setFields[] = $field . ' = ' . $value;
         }
 
-        $sql .= implode(', ', $setFields) . ' WHERE ' . $this->generateConditionsSQL();
+        $sql .= implode(', ', $setFields) . $this->generateConditionsSQL();
         return $sql;
     }
 
@@ -535,7 +556,11 @@ class Model
      */
     protected function generateConditionsSQL()
     {
-        $sql = '';
+        if (empty($this->conditions)) {
+            return '';
+        }
+
+        $sql = ' WHERE';
         foreach ($this->conditions as $condition) {
             $this->prepareBindings($condition['pattern'][2]);
 
@@ -552,11 +577,12 @@ class Model
      */
     protected function generateSelectSQL($column = ['*'])
     {
-        $sql = 'SELECT ' . implode(',', $column) . ' FROM ' . $this->getTableName() . ' WHERE '
+        $sql = 'SELECT ' . implode(',', $column) . ' FROM ' . $this->getTableName()
             . $this->generateConditionsSQL()
             . $this->generateGroupBySQL()
             . $this->generateOrderBySQL()
             . $this->generateLimitSQL();
+
         return $sql;
     }
 
@@ -598,6 +624,22 @@ class Model
     public function setData(array $data)
     {
         $this->data = $data;
+    }
+
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    /**
+     * 获取配置
+     * @param string $key
+     * @param null $default
+     * @return null
+     */
+    public function getConfig($key = '', $default = null)
+    {
+        return $this->db->getConfig($key, $default);
     }
 
     /**

@@ -21,8 +21,8 @@ abstract class Relation
     protected $localKey;
 
     /**
-     * 关联模型
-     * @var Model
+     * 关联模型|数据
+     * @var array|Model
      */
     protected $parent;
 
@@ -33,9 +33,8 @@ abstract class Relation
     protected $related;
 
 
-    public function __construct($related, Model $parent, $foreignKey, $localKey)
+    public function __construct($related, $foreignKey, $localKey)
     {
-        $this->parent = $parent;
         $this->foreignKey = $foreignKey;
         $this->localKey = $localKey;
 
@@ -58,18 +57,32 @@ abstract class Relation
      */
     public function addConditions(\Closure $helper = null)
     {
-        $this->related->where($this->foreignKey, $this->getLocalKey());
+        // 添加基础的主键关联条件
+        $this->related->where($this->foreignKey, $this->getLocalKeyValue());
 
         if (!is_null($helper)) {
-            $helper($this->related);
+            // 可以通过helper自定义过多筛选条件
+            // parent为自身数据，类型取决于结果集类型配置（数组或Model对象）
+            // related为目标模型
+            // 如：$related->where('field', $parent->field)
+            $helper($this->parent, $this->related);
         }
+    }
+
+    /**
+     * 设置关联源数据
+     * @param array|Model $parent
+     */
+    public function setParent($parent)
+    {
+        $this->parent = $parent;
     }
 
     /**
      * 获取localKey值
      * @return mixed
      */
-    public function getLocalKey()
+    public function getLocalKeyValue()
     {
         return $this->parent[$this->localKey];
     }
@@ -78,5 +91,5 @@ abstract class Relation
      * 获取结果
      * @return mixed
      */
-    abstract function getResult();
+    abstract function getResult($parent);
 }

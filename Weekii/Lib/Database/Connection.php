@@ -218,7 +218,7 @@ class Connection
             if (isset($this->options['debug']) && $this->options['debug'] === true) {
                 $debugInfo = "\nSQL: " . $query . "\n";
                 $debugInfo .= 'parameters: ' . json_encode($bindings, JSON_UNESCAPED_UNICODE) . "\n";
-                $debugInfo .= 'result: ' . print_r($result, true);
+                $debugInfo .= 'rows: ' . count($result);
                 echo $debugInfo;
             }
         } catch (\Exception $e) {
