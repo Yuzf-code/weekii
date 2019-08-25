@@ -67,7 +67,7 @@ abstract class Logger
      */
     protected function writeByType($type, $message)
     {
-        if ($this->checkLevel($type)) {
+        if (!$this->checkLevel($type)) {
             return;
         }
         $message = $this->prepareMessage($type, $message);

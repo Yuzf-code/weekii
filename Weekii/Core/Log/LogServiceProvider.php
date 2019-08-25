@@ -16,7 +16,7 @@ class LogServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton('logger', function () {
-            $options = Config::getInstance()->get('log');
+            $options = Config::getInstance()->get('app')['log'];
             return new CliLogger($options);
         });
     }
