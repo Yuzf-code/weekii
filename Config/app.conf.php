@@ -1,6 +1,5 @@
 <?php
 return array(
-    'debug' => true,
 
     // 服务配置
     'swooleServer' => [
@@ -17,6 +16,10 @@ return array(
             'worker_num' => 8,      // worker数量
             'enable_coroutine' => true,     // 开启协程
         ]
+    ],
+
+    'log' => [
+        'level' => \Weekii\Core\Log\Logger::LEVEL_DEBUG
     ],
 
     'database' => [
@@ -67,6 +70,7 @@ return array(
         \Weekii\Core\Route\RouteServiceProvider::class,
         \Weekii\Lib\Database\DatabaseServiceProvider::class,
         \Weekii\Lib\Pool\PoolServiceProvider::class,
-        \Weekii\Lib\Redis\RedisServiceProvider::class
+        \Weekii\Lib\Redis\RedisServiceProvider::class,
+        \Weekii\Core\Log\LogServiceProvider::class
     ],
 );

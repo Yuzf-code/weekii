@@ -2,6 +2,7 @@
 
 namespace Weekii\Lib\Database;
 
+use Weekii\Core\App;
 use Weekii\Lib\Util\Str;
 
 /**
@@ -15,7 +16,10 @@ class Connection
     // 链接句柄
     protected $pdo;
 
+    // 配置项
     protected $options;
+
+    protected $logger;
 
     /**
      * 初始化链接
@@ -24,6 +28,7 @@ class Connection
     public function __construct($options)
     {
         $this->options = $options;
+        $this->logger = App::getInstance()->logger;
         $this->connect();
     }
 
@@ -197,8 +202,6 @@ class Connection
             $result = $this->handleQueryException($query, $bindings, $callback, $e);
         }
 
-        // TODO 查询日志
-
         return $result;
     }
 
@@ -216,10 +219,10 @@ class Connection
             $result = $callback($query, $bindings);
             // 调试模式打印信息
             if (isset($this->options['debug']) && $this->options['debug'] === true) {
-                $debugInfo = "\nSQL: " . $query . "\n";
+                $debugInfo = "SQL: " . $query . "\n";
                 $debugInfo .= 'parameters: ' . json_encode($bindings, JSON_UNESCAPED_UNICODE) . "\n";
                 $debugInfo .= 'rows: ' . count($result);
-                echo $debugInfo;
+                $this->logger->debug($debugInfo);
             }
         } catch (\Exception $e) {
             throw new QueryException($query, $this->prepareBindings($bindings), $e);
@@ -255,8 +258,6 @@ class Connection
             $this->reconnect();
             return $this->runQueryCallback($sql, $bindings, $callback);
         }
-
-        // TODO 错误日志
 
         throw $e;
     }
