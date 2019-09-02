@@ -35,6 +35,11 @@ abstract class Logger
      * @var int
      */
     protected $level = self::LEVEL_DEBUG;
+    /**
+     * 时间格式
+     * @var string
+     */
+    protected $dateFormat = 'Y-m-d H:i:s';
 
     /**
      * 日志类型对应字符串
@@ -135,7 +140,16 @@ abstract class Logger
      */
     protected function getTime()
     {
-        return date('Y-m-d H:i:s');
+        return date($this->dateFormat);
+    }
+
+    /**
+     * 设置日期格式
+     * @param $format
+     */
+    public function setDateFormat($format)
+    {
+        $this->dateFormat = $format;
     }
 
     /**

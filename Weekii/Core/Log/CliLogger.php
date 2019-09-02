@@ -13,6 +13,7 @@ class CliLogger extends Logger
     {
         // 设置日志级别
         $this->level = $options['level'];
+        $this->dateFormat = $options['dateFormat'];
     }
 
     protected function write($message)

@@ -19,7 +19,8 @@ return array(
     ],
 
     'log' => [
-        'level' => \Weekii\Core\Log\Logger::LEVEL_DEBUG
+        'level' => \Weekii\Core\Log\Logger::LEVEL_DEBUG,
+        'dateFormat' => "Y-m-d H:i:s"
     ],
 
     'database' => [
