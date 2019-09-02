@@ -1,13 +1,15 @@
 <?php
 
-namespace Weekii\Core\Log;
+namespace Weekii\Core\Log\impl;
+
+use Weekii\Core\Log\Logger;
 
 /**
  * 基础的cli logger
- * Class CliLogger
- * @package Weekii\Core\Log
+ * Class Cli
+ * @package Weekii\Core\Log\impl
  */
-class CliLogger extends Logger
+class Cli extends Logger
 {
     public function __construct($options)
     {
