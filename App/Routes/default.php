@@ -11,6 +11,7 @@ RouteRule::get('/view/:name', \App\Http\Controller\IndexController::class . '@vi
 RouteRule::get('/db', \App\Http\Controller\IndexController::class . '@db');
 RouteRule::get('/model', \App\Http\Controller\IndexController::class . '@model');
 RouteRule::get('/container/:id', \App\Http\Controller\IndexController::class . '@container');
+RouteRule::get('/cache', \App\Http\Controller\IndexController::class . '@redis');
 
 
 /** WebSocket **/

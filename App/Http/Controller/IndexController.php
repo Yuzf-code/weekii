@@ -84,4 +84,19 @@ class IndexController extends Controller
             'data2' => $data2
         ], 200);
     }
+
+    public function redis()
+    {
+        $cache = $this->app->cache;
+        $result = $cache->set('name', 'Yu');
+
+        $this->writeJson([
+            'msg' => '获取json成功',
+            'code' => 2,
+            'data' => [
+                'result' => $result,
+                'cache' => $cache->get('name')
+            ]
+        ], 200);
+    }
 }

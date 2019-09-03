@@ -36,7 +36,7 @@ return array(
             'prefix'    => 't_',
             'port'      => 3306,
             'getConnectionTimeout' => 1,    // 获取连接最多等待秒数
-            'poolSize' => 50,
+            'poolSize' => 20,
             'debug' => true,                 // 调试模式，打印sql
             'resultType' => \Weekii\Lib\Database\Model::RESULT_TYPE_ARRAY
         ]
@@ -47,8 +47,12 @@ return array(
         'port' => 6379,
         'password' => '123456a.',
         'index' => 1,
-        'poolSize' => 50,
+        'poolSize' => 20,
         'getConnectionTimeout' => 1,    // 获取连接最多等待秒数
+    ],
+
+    'cache' => [
+        'expire' => 86400
     ],
 
     // 是否开启路由缓存
@@ -66,12 +70,17 @@ return array(
     'providers' => [
         /** Framework Service Providers **/
         \Weekii\Core\Swoole\ServerManagerServiceProvider::class,
+        /** HTTP Service Providers **/
         \Weekii\Core\Http\HttpServiceProvider::class,
-        \Weekii\Core\WebSocket\WebSocketServiceProvider::class,
         \Weekii\Core\Route\RouteServiceProvider::class,
+        /** WebSocket Service Providers **/
+        \Weekii\Core\WebSocket\WebSocketServiceProvider::class,
+        /** Database Service Providers **/
         \Weekii\Lib\Database\DatabaseServiceProvider::class,
         \Weekii\Lib\Pool\PoolServiceProvider::class,
         \Weekii\Lib\Redis\RedisServiceProvider::class,
-        \Weekii\Core\Log\LogServiceProvider::class
+
+        \Weekii\Core\Log\LogServiceProvider::class,
+        \Weekii\Lib\Cache\CacheServiceProvider::class,
     ],
 );
