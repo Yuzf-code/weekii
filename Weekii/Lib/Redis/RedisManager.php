@@ -24,7 +24,7 @@ class RedisManager
     public function __construct(App $app)
     {
         $this->app = $app;
-        $this->config = Config::getInstance()->get('redis');
+        $this->config = Config::getInstance()->get('app')['redis'];
 
         $poolSize = $this->getConfig('poolSize');
         $connectionFactory = $this->app->make(ConnectionFactory::class, [$this->config]);

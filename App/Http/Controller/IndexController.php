@@ -88,7 +88,7 @@ class IndexController extends Controller
     public function redis()
     {
         $cache = $this->app->cache;
-        $result = $cache->set('name', 'Yu');
+        $result = $cache->set('name', 'Weekii');
 
         $this->writeJson([
             'msg' => '获取json成功',

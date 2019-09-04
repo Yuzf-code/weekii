@@ -14,6 +14,8 @@ abstract class Cache
      */
     protected $expire = 3600;
 
+    protected $prefix = '';
+
     /**
      * Cache constructor.
      * @param array $options
@@ -25,4 +27,9 @@ abstract class Cache
     abstract public function get($key);
 
     abstract public function del($key);
+
+    public function withPrefix($key)
+    {
+        return $this->prefix . $key;
+    }
 }

@@ -16,11 +16,16 @@ class Redis extends Cache
             $this->expire = $options['expire'];
         }
 
+        if (isset($options['prefix']) && is_string($options['prefix'])) {
+            $this->prefix = $options['prefix'];
+        }
+
         $this->handler = App::getInstance()->redis;
     }
 
     public function set($key, $value, $expire = null)
     {
+        $key = $this->withPrefix($key);
         $result = $this->handler->set($key, $value);
 
         if (is_null($expire)) {
@@ -34,11 +39,13 @@ class Redis extends Cache
 
     public function get($key)
     {
+        $key = $this->withPrefix($key);
         return $this->handler->get($key);
     }
 
     public function del($key)
     {
+        $key = $this->withPrefix($key);
         return $this->handler->delete($key);
     }
 }

@@ -16,6 +16,6 @@ class ConnectionFactory implements Factory
 
     public function make()
     {
-        // TODO: Implement make() method.
+        return new Connection($this->config);
     }
 }
