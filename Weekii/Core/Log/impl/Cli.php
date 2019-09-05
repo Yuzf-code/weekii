@@ -22,4 +22,16 @@ class Cli extends Logger
     {
         echo $message;
     }
+
+    public function throwable(\Throwable $e)
+    {
+        $traces = $e->getTrace();
+        $errorMsg =  $e->getMessage() . PHP_EOL . 'FILE: ' . $e->getFile() . '(' . $e->getLine() . ')' . PHP_EOL;
+
+        foreach($traces as $trace){
+            $errorMsg .= "CALLS:{$trace['class']}{$trace['type']}{$trace['function']}" . PHP_EOL . "FILE: {$trace['file']} ({$trace['line']})" . PHP_EOL;
+        }
+
+        $this->error($errorMsg);
+    }
 }

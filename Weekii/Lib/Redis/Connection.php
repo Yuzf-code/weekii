@@ -3,7 +3,6 @@
 namespace Weekii\Lib\Redis;
 
 
-use Weekii\Core\App;
 use Weekii\Lib\Util\Str;
 
 class Connection
@@ -21,7 +20,11 @@ class Connection
     protected function connect()
     {
         $this->handler = new \Redis();
-        $this->handler->connect($this->config['host'], $this->config['port']);
+        $success = $this->handler->connect($this->config['host'], $this->config['port'], $this->config['connectTimeout']);
+
+        if (!$success) {
+            throw new ConnectionException('Connect to redis server timeout.');
+        }
 
         if (!empty($this->config['password'])) {
             $this->handler->auth($this->config['password']);

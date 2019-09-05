@@ -89,6 +89,13 @@ abstract class Logger
     }
 
     /**
+     * 格式化Throwable信息输出日志
+     * @param \Throwable $e
+     * @return mixed
+     */
+    abstract public function throwable(\Throwable $e);
+
+    /**
      * 写入warning日志
      * @param $message
      */

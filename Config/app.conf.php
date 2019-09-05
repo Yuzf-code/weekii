@@ -48,7 +48,8 @@ return array(
         'password' => '123456a.',
         'index' => 1,
         'poolSize' => 20,
-        'getConnectionTimeout' => 1,    // 获取连接最多等待秒数
+        'connectTimeout' => 2,          // 连接超时时间($redis->connect()超时时间)
+        'getConnectionTimeout' => 1,    // 从池中获取连接最多等待秒数($pool->pop()操作超时时间)
     ],
 
     'cache' => [

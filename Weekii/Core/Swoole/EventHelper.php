@@ -37,11 +37,8 @@ class EventHelper
                 // 释放连接
                 $app->db->freeConnection();
                 $app->redis->freeConnection();
-            } catch (\Throwable $throwable) {
-                echo $throwable->getFile() . "\n";
-                echo $throwable->getLine() . "\n";
-                echo $throwable->getMessage() . "\n";
-                // TODO 路由调度异常处理
+            } catch (\Throwable $e) {
+                $app->logger->throwable($e);
             }
         });
     }
@@ -82,11 +79,8 @@ class EventHelper
                 // 释放连接
                 $app->db->freeConnection();
                 $app->redis->freeConnection();
-            } catch (\Throwable $throwable) {
-                echo $throwable->getFile() . "\n";
-                echo $throwable->getLine() . "\n";
-                echo $throwable->getMessage() . "\n";
-                // TODO 路由调度异常处理
+            } catch (\Throwable $e) {
+                $app->logger->throwable($e);
             }
         });
     }
