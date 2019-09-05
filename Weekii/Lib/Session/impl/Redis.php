@@ -1,17 +1,19 @@
 <?php
 
-namespace Weekii\Lib\Cache\impl;
+namespace Weekii\Lib\Session\impl;
 
 
 use Weekii\Core\App;
-use Weekii\Lib\Cache\Cache;
+use Weekii\Lib\Session\Session;
 
-class Redis extends Cache
+class Redis extends Session
 {
     protected $handler;
 
     public function __construct(array $options)
     {
+        $this->handler = App::getInstance()->redis;
+
         if (isset($options['expire']) && is_int($options['expire'])) {
             $this->expire = $options['expire'];
         }
@@ -19,14 +21,12 @@ class Redis extends Cache
         if (isset($options['prefix']) && is_string($options['prefix'])) {
             $this->prefix = $options['prefix'];
         }
-
-        $this->handler = App::getInstance()->redis;
     }
 
-    public function set($key, $value, $expire = null)
+    public function set($key, array $value, $expire = null)
     {
         $key = $this->withPrefix($key);
-        $result = $this->handler->set($key, $value);
+        $result = $this->handler->set($key, json_encode($value));
 
         if (is_null($expire)) {
             $expire = $this->expire;
@@ -42,7 +42,14 @@ class Redis extends Cache
     public function get($key)
     {
         $key = $this->withPrefix($key);
-        return $this->handler->get($key);
+
+        $value = $this->handler->get($key);
+
+        if ($value !== false) {
+            $value = json_decode($value, true);
+        }
+
+        return $value;
     }
 
     public function del($key)

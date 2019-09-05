@@ -52,7 +52,13 @@ return array(
     ],
 
     'cache' => [
-        'expire' => 86400
+        'expire' => 86400,
+        'prefix' => 'cache_'
+    ],
+
+    'session' => [
+        'expire' => 86400,
+        'prefix' => 'session_'
     ],
 
     // 是否开启路由缓存
