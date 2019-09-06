@@ -1,5 +1,5 @@
 # weekii
-一个基于swoole的简单框架（开始写的初衷也主要是为了学习~
+一个基于 `swoole` 的服务端MVC框架
 
 ## 特性
 - 常驻进程，支持协程( `Context` 管理)
@@ -16,11 +16,8 @@
 - 面向对象，尽量避免过多使用全局变量、类静态变量
 
 ## 开发计划
-+ 完善 Model ORM
-+ Cache(Redis/File)
-+ Logger
-+ 完善异常处理
-+ Websocket MVC
++ Facade
++ Middleware
 + RPC
 
 ## 配置
@@ -28,17 +25,16 @@
 ```php
 <?php
 return array(
-    'debug' => true,
 
     // 服务配置
     'swooleServer' => [
         // 服务类型
-        'type' => \Weekii\Core\Swoole\ServerManager::TYPE_HTTP,
+        'type' => \Weekii\Core\Swoole\ServerManager::TYPE_WEB_SOCKET,
         'port' => 9501,
         'host' => '0.0.0.0',
         'mode' => SWOOLE_PROCESS,
         'sockType' => SWOOLE_TCP,
-        'setting' => [  // swoole server配置项
+        'setting' => [
             //'task_worker_num' => 8, //异步任务进程
             //'task_max_request' => 10,
             'max_request' => 5000,  // worker最大处理请求数
@@ -47,41 +43,77 @@ return array(
         ]
     ],
 
+    'log' => [
+        'level' => \Weekii\Core\Log\Logger::LEVEL_DEBUG,
+        'dateFormat' => "Y-m-d H:i:s"
+    ],
+
     'database' => [
         'default' => [
             'driver'    => 'mysql',
-            'host'      => '',
-            'database'  => '',
-            'username'  => '',
-            'password'  => '',
+            'host'      => '192.168.99.100',
+            'database'  => 'test',
+            'username'  => 'root',
+            'password'  => '123456a.',
             'charset'   => 'utf8mb4',
             'collation' => 'utf8mb4_general_ci',
             //'unix_socket' => '/var/lib/mysql/mysql.sock',
             'prefix'    => 't_',
             'port'      => 3306,
-            'getConnectionTimeout' => 1,  // 获取连接最多等待秒数（连接池无法无法创建新连接时，将阻塞当前协程等待可用连接）
-            'poolSize' => 50,              // 连接池大小（每个worker进程一个池）
-            'debug' => true                // 调试模式，打印sql
+            'getConnectionTimeout' => 1,    // 获取连接最多等待秒数
+            'poolSize' => 20,
+            'debug' => true,                 // 调试模式，打印sql
+            'resultType' => \Weekii\Lib\Database\Model::RESULT_TYPE_ARRAY
         ]
     ],
 
-    // 是否开启路由缓存（这个功能暂时没啥用，比较鸡肋）
+    'redis' => [
+        'host' => '192.168.99.100',
+        'port' => 6379,
+        'password' => '123456a.',
+        'index' => 1,
+        'poolSize' => 20,
+        'connectTimeout' => 2,          // 连接超时时间($redis->connect()超时时间)
+        'getConnectionTimeout' => 1,    // 从池中获取连接最多等待秒数($pool->pop()操作超时时间)
+    ],
+
+    'cache' => [
+        'expire' => 86400,
+        'prefix' => 'cache_'
+    ],
+
+    'session' => [
+        'expire' => 86400,
+        'prefix' => 'session_'
+    ],
+
+    // 是否开启路由缓存
     'routeCache' => true,
     // 路由缓存内存表大小
     'routeTableSize' => 1024,
     // 路由缓存表名称 (Container 中的 key)
     'routeTableName' => '__routeTable',
 
-    // 临时文件夹（用于存放一些临时文件，比如view缓存）
+    // 临时文件夹
     'tempDir' => PROJECT_ROOT . '/temp',
 
     'timezone' => 'Asia/Shanghai',
 
     'providers' => [
         /** Framework Service Providers **/
+        \Weekii\Core\Swoole\ServerManagerServiceProvider::class,
+        /** HTTP Service Providers **/
         \Weekii\Core\Http\HttpServiceProvider::class,
+        \Weekii\Core\Route\RouteServiceProvider::class,
+        /** WebSocket Service Providers **/
+        \Weekii\Core\WebSocket\WebSocketServiceProvider::class,
+        /** Database Service Providers **/
         \Weekii\Lib\Database\DatabaseServiceProvider::class,
-        \Weekii\Lib\Pool\PoolServiceProvider::class
+        \Weekii\Lib\Pool\PoolServiceProvider::class,
+        \Weekii\Lib\Redis\RedisServiceProvider::class,
+
+        \Weekii\Core\Log\LogServiceProvider::class,
+        \Weekii\Lib\Cache\CacheServiceProvider::class,
     ],
 );
 ```
@@ -198,6 +230,41 @@ class IndexController extends Controller
             'msg' => '获取json成功',
             'code' => 2,
             'data' => $data
+        ], 200);
+    }
+    
+    public function model(Member $memberModel)
+    {
+            /*$memberModel->find(1);
+            $memberModel->name = '帅的一批的人';
+            $memberModel->save();*/
+    
+            $data = $memberModel->count('id');
+    
+            $data2 = $memberModel->with('card', ['*'], function ($row, Card $card) {
+                $card->where('title', $row['name']);
+            })->get();
+    
+            $this->writeJson([
+                'msg' => '获取json成功',
+                'code' => 2,
+                'data' => $data,
+                'data2' => $data2
+            ], 200);
+    }
+        
+    public function redis()
+    {
+        $cache = $this->app->cache;
+        $result = $cache->set('name', 'Weekii');
+    
+        $this->writeJson([
+            'msg' => '获取json成功',
+            'code' => 2,
+            'data' => [
+                'result' => $result,
+                'cache' => $cache->get('name')
+            ]
         ], 200);
     }
 }
