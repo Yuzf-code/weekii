@@ -34,7 +34,7 @@ return array(
     // 服务配置
     'swooleServer' => [
         // 服务类型
-        'type' => \Weekii\Core\Swoole\ServerManager::TYPE_WEB_SOCKET,
+        'type' => \More\Src\Core\Swoole\ServerManager::TYPE_WEB_SOCKET,
         'port' => 9501,
         'host' => '0.0.0.0',
         'mode' => SWOOLE_PROCESS,
@@ -49,7 +49,7 @@ return array(
     ],
 
     'log' => [
-        'level' => \Weekii\Core\Log\Logger::LEVEL_DEBUG,
+        'level' => \More\Src\Core\Log\Logger::LEVEL_DEBUG,
         'dateFormat' => "Y-m-d H:i:s"
     ],
 
@@ -68,7 +68,7 @@ return array(
             'getConnectionTimeout' => 1,    // 获取连接最多等待秒数
             'poolSize' => 20,
             'debug' => true,                 // 调试模式，打印sql
-            'resultType' => \Weekii\Lib\Database\Model::RESULT_TYPE_ARRAY
+            'resultType' => \More\Src\Lib\Database\Model::RESULT_TYPE_ARRAY
         ]
     ],
 
@@ -106,19 +106,19 @@ return array(
 
     'providers' => [
         /** Framework Service Providers **/
-        \Weekii\Core\Swoole\ServerManagerServiceProvider::class,
+        \More\Src\Core\Swoole\ServerManagerServiceProvider::class,
         /** HTTP Service Providers **/
-        \Weekii\Core\Http\HttpServiceProvider::class,
-        \Weekii\Core\Route\RouteServiceProvider::class,
+        \More\Src\Core\Http\HttpServiceProvider::class,
+        \More\Src\Core\Route\RouteServiceProvider::class,
         /** WebSocket Service Providers **/
-        \Weekii\Core\WebSocket\WebSocketServiceProvider::class,
+        \More\Src\Core\WebSocket\WebSocketServiceProvider::class,
         /** Database Service Providers **/
-        \Weekii\Lib\Database\DatabaseServiceProvider::class,
-        \Weekii\Lib\Pool\PoolServiceProvider::class,
-        \Weekii\Lib\Redis\RedisServiceProvider::class,
+        \More\Src\Lib\Database\DatabaseServiceProvider::class,
+        \More\Src\Lib\Pool\PoolServiceProvider::class,
+        \More\Src\Lib\Redis\RedisServiceProvider::class,
 
-        \Weekii\Core\Log\LogServiceProvider::class,
-        \Weekii\Lib\Cache\CacheServiceProvider::class,
+        \More\Src\Core\Log\LogServiceProvider::class,
+        \More\Src\Lib\Cache\CacheServiceProvider::class,
     ],
 );
 ```
@@ -135,9 +135,9 @@ return array(
 `{projectroot}/App/Http/Routes/*.php`
 ```php
 <?php
-use Weekii\Core\Http\RouteRule;
+use \More\Src\Core\Route\RouteRule;
 // 路由到闭包
-RouteRule::get('/', function (\Weekii\Core\Http\Request $request, \Weekii\Core\Http\Response $response, \duncan3dc\Laravel\BladeInstance $view) {
+RouteRule::get('/', function (\More\Src\Core\Http\Request $request, \More\Src\Core\Http\Response $response, \duncan3dc\Laravel\BladeInstance $view) {
     $response->redirect('/hello/' . $request->get('name'));
 });
 
@@ -151,14 +151,14 @@ RouteRule::get('/container/:id', \App\Http\Controller\IndexController::class . '
 ### 控制器
 Http 控制器位于 `{projectroot}/App/Http/Controller` 目录
 命名方式为 `IndexController.php` 
-需要继承 `Weekii\Core\Http\Controller` 类
+需要继承 `\More\Src\Core\Http\Controller` 类
 
 ```php
 <?php
 namespace App\Http\Controller;
 
 use App\Model\Member;
-use Weekii\Core\Http\Controller;
+use \More\Src\Core\Http\Controller;
 
 class IndexController extends Controller
 {
