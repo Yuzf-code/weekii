@@ -1,5 +1,5 @@
 # weekii
-一个基于 `swoole` 的服务端MVC框架
+基于 `MorePHP` 框架的应用模板
 
 ## composer 安装
 ```
