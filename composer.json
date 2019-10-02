@@ -1,4 +1,7 @@
 {
+    "name": "roki/weekii",
+    "description": "基于 MorePHP 框架的应用模板",
+
     "autoload": {
         "psr-4": {
             "App\\": "App/"
