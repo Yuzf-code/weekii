@@ -1,6 +1,11 @@
 # weekii
 一个基于 `swoole` 的服务端MVC框架
 
+## composer 安装
+```
+composer create-project roki/weekii blog
+```
+
 ## 特性
 - 常驻进程，支持协程( `Context` 管理)
 - 简单的依赖注入容器
