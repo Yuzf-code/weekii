@@ -1,12 +1,12 @@
 {
     "autoload": {
         "psr-4": {
-            "App\\": "App/",
-            "Weekii\\": "Weekii/"
+            "App\\": "App/"
         }
     },
 
     "require": {
-        "duncan3dc/blade": "^4.2"
+        "duncan3dc/blade": "^4.2",
+        "roki/more": "dev-master"
     }
 }

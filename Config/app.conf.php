@@ -4,7 +4,7 @@ return array(
     // 服务配置
     'swooleServer' => [
         // 服务类型
-        'type' => \Weekii\Core\Swoole\ServerManager::TYPE_WEB_SOCKET,
+        'type' => \More\Src\Core\Swoole\ServerManager::TYPE_WEB_SOCKET,
         'port' => 9501,
         'host' => '0.0.0.0',
         'mode' => SWOOLE_PROCESS,
@@ -19,7 +19,7 @@ return array(
     ],
 
     'log' => [
-        'level' => \Weekii\Core\Log\Logger::LEVEL_DEBUG,
+        'level' => \More\Src\Core\Log\Logger::LEVEL_DEBUG,
         'dateFormat' => "Y-m-d H:i:s"
     ],
 
@@ -38,7 +38,7 @@ return array(
             'getConnectionTimeout' => 1,    // 获取连接最多等待秒数
             'poolSize' => 20,
             'debug' => true,                 // 调试模式，打印sql
-            'resultType' => \Weekii\Lib\Database\Model::RESULT_TYPE_ARRAY
+            'resultType' => \More\Src\Lib\Database\Model::RESULT_TYPE_ARRAY
         ]
     ],
 
@@ -76,18 +76,18 @@ return array(
 
     'providers' => [
         /** Framework Service Providers **/
-        \Weekii\Core\Swoole\ServerManagerServiceProvider::class,
+        \More\Src\Core\Swoole\ServerManagerServiceProvider::class,
         /** HTTP Service Providers **/
-        \Weekii\Core\Http\HttpServiceProvider::class,
-        \Weekii\Core\Route\RouteServiceProvider::class,
+        \More\Src\Core\Http\HttpServiceProvider::class,
+        \More\Src\Core\Route\RouteServiceProvider::class,
         /** WebSocket Service Providers **/
-        \Weekii\Core\WebSocket\WebSocketServiceProvider::class,
+        \More\Src\Core\WebSocket\WebSocketServiceProvider::class,
         /** Database Service Providers **/
-        \Weekii\Lib\Database\DatabaseServiceProvider::class,
-        \Weekii\Lib\Pool\PoolServiceProvider::class,
-        \Weekii\Lib\Redis\RedisServiceProvider::class,
+        \More\Src\Lib\Database\DatabaseServiceProvider::class,
+        \More\Src\Lib\Pool\PoolServiceProvider::class,
+        \More\Src\Lib\Redis\RedisServiceProvider::class,
 
-        \Weekii\Core\Log\LogServiceProvider::class,
-        \Weekii\Lib\Cache\CacheServiceProvider::class,
+        \More\Src\Core\Log\LogServiceProvider::class,
+        \More\Src\Lib\Cache\CacheServiceProvider::class,
     ],
 );

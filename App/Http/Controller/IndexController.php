@@ -3,8 +3,8 @@ namespace App\Http\Controller;
 
 use App\Model\Card;
 use App\Model\Member;
-use Weekii\Core\Http\Controller;
-use Weekii\Lib\Database\Model;
+use More\Src\Core\Http\Controller;
+use More\Src\Lib\Database\Model;
 
 class IndexController extends Controller
 {

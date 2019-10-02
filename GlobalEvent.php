@@ -1,13 +1,13 @@
 <?php
-namespace Weekii;
+namespace More\Src;
 
-use Weekii\Core\App;
-use Weekii\Core\Http\Request;
-use Weekii\Core\Http\Response;
-use Weekii\Core\Swoole\EventHelper;
-use Weekii\Core\Swoole\EventRegister;
-use Weekii\Core\WebSocket\Command;
-use Weekii\Lib\Config;
+use More\Src\Core\App;
+use More\Src\Core\Http\Request;
+use More\Src\Core\Http\Response;
+use More\Src\Core\Swoole\EventHelper;
+use More\Src\Core\Swoole\EventRegister;
+use More\Src\Core\WebSocket\Command;
+use More\Src\Lib\Config;
 
 class GlobalEvent
 {
