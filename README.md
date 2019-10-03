@@ -240,22 +240,39 @@ class IndexController extends Controller
     
     public function model(Member $memberModel)
     {
-            /*$memberModel->find(1);
-            $memberModel->name = '帅的一批的人';
-            $memberModel->save();*/
+        $memberModel->find(1);
+        $memberModel->name = '小余';
+        $memberModel->save();
+   
+        $data = $memberModel->count('id');
+   
+        $data2 = $memberModel->with('card', ['*'], function ($row, Builder $card) {
+            $card->where('title', $row['name']);
+        })->get();
+   
+        $this->writeJson([
+            'msg' => '获取json成功',
+            'code' => 2,
+            'data' => $data,
+            'data2' => $data2
+        ], 200);
+    }
     
-            $data = $memberModel->count('id');
+    public function join(Member $memberModel)
+    {
+        /*$memberModel->where('t_user.id', 2)->leftJoin('card', 't_user.id', '=', 't_card.user_id')
+            ->first();*/
     
-            $data2 = $memberModel->with('card', ['*'], function ($row, Card $card) {
-                $card->where('title', $row['name']);
-            })->get();
+        $memberModel->where('t_user.id', 1)->leftJoin('card', function (Builder $builder) {
+            $builder->on('t_user.id', '=', 't_card.user_id')
+                ->where('t_card.id', 1);
+        })->first();
     
-            $this->writeJson([
-                'msg' => '获取json成功',
-                'code' => 2,
-                'data' => $data,
-                'data2' => $data2
-            ], 200);
+        $this->writeJson([
+            'msg' => '获取json成功',
+            'code' => 2,
+            'data' => $memberModel->title
+        ], 200);
     }
         
     public function redis()

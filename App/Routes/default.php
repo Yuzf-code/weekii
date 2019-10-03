@@ -10,6 +10,7 @@ RouteRule::get('/hello/:name', \App\Http\Controller\IndexController::class . '@h
 RouteRule::get('/view/:name', \App\Http\Controller\IndexController::class . '@view');
 RouteRule::get('/db', \App\Http\Controller\IndexController::class . '@db');
 RouteRule::get('/model', \App\Http\Controller\IndexController::class . '@model');
+RouteRule::get('/join', \App\Http\Controller\IndexController::class . '@join');
 RouteRule::get('/container/:id', \App\Http\Controller\IndexController::class . '@container');
 RouteRule::get('/cache', \App\Http\Controller\IndexController::class . '@redis');
 

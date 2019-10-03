@@ -38,7 +38,7 @@ return array(
             'getConnectionTimeout' => 1,    // 获取连接最多等待秒数
             'poolSize' => 20,
             'debug' => true,                 // 调试模式，打印sql
-            'resultType' => \More\Src\Lib\Database\Model::RESULT_TYPE_ARRAY
+            'resultType' => \More\Src\Lib\Database\Model::RESULT_TYPE_MODEL
         ]
     ],
 
