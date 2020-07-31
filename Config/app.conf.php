@@ -26,10 +26,10 @@ return array(
     'database' => [
         'default' => [
             'driver'    => 'mysql',
-            'host'      => '192.168.99.100',
+            'host'      => 'mysql8',
             'database'  => 'test',
             'username'  => 'root',
-            'password'  => '123456a.',
+            'password'  => 'yourpassword.',
             'charset'   => 'utf8mb4',
             'collation' => 'utf8mb4_general_ci',
             //'unix_socket' => '/var/lib/mysql/mysql.sock',
@@ -43,9 +43,9 @@ return array(
     ],
 
     'redis' => [
-        'host' => '192.168.99.100',
+        'host' => 'redis',
         'port' => 6379,
-        'password' => '123456a.',
+        'password' => 'yourpassword',
         'index' => 1,
         'poolSize' => 20,
         'connectTimeout' => 2,          // 连接超时时间($redis->connect()超时时间)

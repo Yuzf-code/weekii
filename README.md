@@ -1,6 +1,8 @@
 # weekii
 基于 `MorePHP` 框架的应用模板
 
+[Roki's Blog](http://blog.weekii.cn/)
+
 ## composer 安装
 ```
 composer create-project roki/weekii blog

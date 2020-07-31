@@ -7,6 +7,9 @@ RouteRule::get('/', function (More\Src\Core\Http\Request $request, More\Src\Core
 });
 
 RouteRule::get('/hello/:name', \App\Http\Controller\IndexController::class . '@hello');
+RouteRule::get('/hello/:name/test', function (More\Src\Core\Http\Request $request, More\Src\Core\Http\Response $response, \duncan3dc\Laravel\BladeInstance $view) {
+    $response->write('test');
+});
 RouteRule::get('/view/:name', \App\Http\Controller\IndexController::class . '@view');
 RouteRule::get('/db', \App\Http\Controller\IndexController::class . '@db');
 RouteRule::get('/model', \App\Http\Controller\IndexController::class . '@model');
